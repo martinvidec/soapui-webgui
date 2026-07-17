@@ -1,0 +1,251 @@
+spike:soapui-spike:jar:0.0.1-SNAPSHOT
+\- com.smartbear.soapui:soapui:jar:5.10.0:compile
+   +- junit:junit:jar:4.13.1:compile
+   |  \- org.hamcrest:hamcrest-core:jar:1.3:compile
+   +- org.apache.xmlbeans:xmlbeans:jar:3.1.1-sb-fixed:compile
+   +- org.apache.xmlbeans:xmlbeans-xpath:jar:2.6.0:compile
+   |  \- net.sf.saxon:saxon:jar:9:compile
+   +- javax.xml.bind:jsr173_api:jar:1.0:compile
+   +- com.google.guava:guava:jar:32.1.3-android:compile
+   |  +- com.google.guava:failureaccess:jar:1.0.1:compile
+   |  +- com.google.guava:listenablefuture:jar:9999.0-empty-to-avoid-conflict-with-guava:compile
+   |  +- com.google.code.findbugs:jsr305:jar:3.0.2:compile
+   |  +- org.checkerframework:checker-qual:jar:3.37.0:compile
+   |  +- com.google.errorprone:error_prone_annotations:jar:2.21.1:compile
+   |  \- com.google.j2objc:j2objc-annotations:jar:2.8:compile
+   +- commons-collections:commons-collections:jar:3.2.2:compile
+   +- commons-lang:commons-lang:jar:2.4:compile
+   +- commons-io:commons-io:jar:2.4:compile
+   +- org.apache.logging.log4j:log4j-api:jar:2.26.0:compile
+   +- org.apache.logging.log4j:log4j-core:jar:2.26.0:compile
+   +- org.apache.logging.log4j:log4j-slf4j2-impl:jar:2.26.0:compile
+   +- org.slf4j:slf4j-ext:jar:2.0.18:compile
+   +- org.slf4j:slf4j-api:jar:2.0.18:compile
+   +- com.smartbear.utils.analytics:analytics-core:jar:5.5.5:compile
+   |  +- com.mixpanel:mixpanel-java:jar:1.4.4:compile
+   |  |  \- org.json:json:jar:20090211:compile
+   |  \- com.segment.analytics.java:analytics:jar:3.5.1:compile
+   |     +- com.segment.analytics.java:analytics-core:jar:3.5.1:compile
+   |     |  +- com.squareup.retrofit2:retrofit:jar:2.9.0:compile
+   |     |  +- com.google.code.gson:gson:jar:2.9.1:compile
+   |     |  \- com.google.auto.value:auto-value-annotations:jar:1.10.1:compile
+   |     +- com.squareup.okhttp3:okhttp:jar:4.10.0:compile
+   |     |  +- com.squareup.okio:okio-jvm:jar:3.0.0:compile
+   |     |  |  \- org.jetbrains.kotlin:kotlin-stdlib-common:jar:1.5.31:compile
+   |     |  \- org.jetbrains.kotlin:kotlin-stdlib:jar:1.6.20:compile
+   |     |     \- org.jetbrains:annotations:jar:13.0:compile
+   |     +- com.squareup.okhttp3:logging-interceptor:jar:4.10.0:compile
+   |     |  \- org.jetbrains.kotlin:kotlin-stdlib-jdk8:jar:1.6.10:compile
+   |     |     \- org.jetbrains.kotlin:kotlin-stdlib-jdk7:jar:1.6.10:compile
+   |     +- com.squareup.retrofit2:converter-gson:jar:2.9.0:compile
+   |     +- com.squareup.retrofit2:retrofit-mock:jar:2.9.0:compile
+   |     \- com.segment.backo:backo:jar:1.0.0:compile
+   +- com.smartbear.utils.analytics:out-app-analytics-provider:jar:5.5.5:compile
+   +- com.jgoodies:forms:jar:1.0.7:compile
+   +- com.jgoodies:looks:jar:2.2.0:compile
+   +- com.jgoodies:binding:jar:2.0.1:compile
+   +- com.fifesoft:rsyntaxtextarea:jar:2.5.0:compile
+   +- org.openjfx:javafx-base:jar:win:17.0.12:compile
+   +- org.openjfx:javafx-base:jar:linux:17.0.12:compile
+   +- org.openjfx:javafx-base:jar:mac:17.0.12:compile
+   +- org.openjfx:javafx-base:jar:mac-aarch64:17.0.12:compile
+   +- org.openjfx:javafx-controls:jar:win:17.0.12:compile
+   |  \- org.openjfx:javafx-graphics:jar:17.0.12:compile
+   +- org.openjfx:javafx-controls:jar:linux:17.0.12:compile
+   +- org.openjfx:javafx-controls:jar:mac:17.0.12:compile
+   +- org.openjfx:javafx-controls:jar:mac-aarch64:17.0.12:compile
+   +- org.openjfx:javafx-graphics:jar:win:17.0.12:compile
+   |  \- org.openjfx:javafx-base:jar:17.0.12:compile
+   +- org.openjfx:javafx-graphics:jar:linux:17.0.12:compile
+   +- org.openjfx:javafx-graphics:jar:mac:17.0.12:compile
+   +- org.openjfx:javafx-graphics:jar:mac-aarch64:17.0.12:compile
+   +- org.openjfx:javafx-media:jar:win:17.0.12:compile
+   +- org.openjfx:javafx-media:jar:linux:17.0.12:compile
+   +- org.openjfx:javafx-media:jar:mac:17.0.12:compile
+   +- org.openjfx:javafx-media:jar:mac-aarch64:17.0.12:compile
+   +- org.openjfx:javafx-web:jar:win:17.0.12:compile
+   |  +- org.openjfx:javafx-controls:jar:17.0.12:compile
+   |  \- org.openjfx:javafx-media:jar:17.0.12:compile
+   +- org.openjfx:javafx-web:jar:linux:17.0.12:compile
+   +- org.openjfx:javafx-web:jar:mac:17.0.12:compile
+   +- org.openjfx:javafx-web:jar:mac-aarch64:17.0.12:compile
+   +- org.openjfx:javafx-swing:jar:win:17.0.12:compile
+   +- org.openjfx:javafx-swing:jar:linux:17.0.12:compile
+   +- org.openjfx:javafx-swing:jar:mac:17.0.12:compile
+   +- org.openjfx:javafx-swing:jar:mac-aarch64:17.0.12:compile
+   +- jetty:jetty:jar:6.1.26:compile
+   +- jetty:jetty-util:jar:6.1.26:compile
+   +- jetty:servlet-api:jar:2.5-20081211:compile
+   +- org.apache.ws.security:wss4j:jar:1.6.17:compile
+   |  +- commons-logging:commons-logging:jar:1.1.1:compile
+   |  \- org.opensaml:opensaml:jar:2.5.1-1:compile
+   |     \- org.opensaml:openws:jar:1.4.2-1:compile
+   |        \- org.opensaml:xmltooling:jar:1.3.2-1:compile
+   +- org.htmlunit:htmlunit:jar:4.21.0:compile
+   |  +- org.htmlunit:neko-htmlunit:jar:4.21.0:compile
+   |  +- org.htmlunit:htmlunit-cssparser:jar:4.21.0:compile
+   |  +- org.htmlunit:htmlunit-xpath:jar:4.21.0:compile
+   |  +- org.htmlunit:htmlunit-csp:jar:4.21.0:compile
+   |  +- org.htmlunit:htmlunit-websocket-client:jar:4.21.0:compile
+   |  \- org.apache.commons:commons-lang3:jar:3.20.0:compile
+   +- org.w3c.css:sac:jar:1.3:compile
+   +- org.htmlunit:htmlunit-core-js:jar:4.21.0:compile
+   +- org.apache.httpcomponents:httpclient:jar:4.5.5:compile
+   +- org.apache.httpcomponents:httpmime:jar:4.5.5:compile
+   +- org.apache.httpcomponents:httpclient-cache:jar:4.5.5:compile
+   +- org.apache.httpcomponents:httpcore:jar:4.4.9:compile
+   +- org.apache.httpcomponents:httpcore-nio:jar:4.4.9:compile
+   +- org.apache.oltu.oauth2:org.apache.oltu.oauth2.client:jar:0.31:compile
+   |  +- org.apache.oltu.oauth2:org.apache.oltu.oauth2.common:jar:0.31:compile
+   |  \- org.codehaus.jettison:jettison:jar:1.2:compile
+   +- org.apache.oltu.oauth2:org.apache.oltu.oauth2.httpclient4:jar:0.31:compile
+   +- com.google.oauth-client:google-oauth-client:jar:1.21.0:compile
+   |  \- com.google.http-client:google-http-client:jar:1.21.0:compile
+   +- org.apache.maven:maven-plugin-api:jar:2.0:compile
+   +- javax.activation:activation:jar:1.1:compile
+   +- javax.mail:mail:jar:1.4:compile
+   +- wsdl4j:wsdl4j:jar:1.6.2-fixed:compile
+   +- com.narupley:not-going-to-be-commons-ssl:jar:0.3.20:compile
+   +- commons-cli:commons-cli:jar:1.2:compile
+   +- commons-beanutils:commons-beanutils:jar:1.9.4:compile
+   +- json:json-lib:jar:2.2.2-jdk15:compile
+   +- com.fasterxml.jackson.core:jackson-core:jar:2.13.0:compile
+   +- com.fasterxml.jackson.core:jackson-annotations:jar:2.13.0:compile
+   +- com.fasterxml.jackson.core:jackson-databind:jar:2.13.0:compile
+   +- ezmorph:ezmorph:jar:1.0.5:compile
+   +- xom:xom:jar:1.4.1:compile
+   +- swingx:swingx:jar:soapui:compile
+   +- commons-codec:commons-codec:jar:1.10:compile
+   +- org.codehaus.groovy:groovy-all:pom:3.0.19:compile
+   |  +- org.codehaus.groovy:groovy:jar:3.0.19:compile
+   |  +- org.codehaus.groovy:groovy-ant:jar:3.0.19:compile
+   |  |  +- org.apache.ant:ant:jar:1.10.12:compile
+   |  |  +- org.apache.ant:ant-junit:jar:1.10.12:runtime
+   |  |  +- org.apache.ant:ant-launcher:jar:1.10.12:runtime
+   |  |  \- org.apache.ant:ant-antlr:jar:1.10.12:runtime
+   |  +- org.codehaus.groovy:groovy-astbuilder:jar:3.0.19:compile
+   |  +- org.codehaus.groovy:groovy-cli-picocli:jar:3.0.19:compile
+   |  |  \- info.picocli:picocli:jar:4.6.3:runtime
+   |  +- org.codehaus.groovy:groovy-console:jar:3.0.19:compile
+   |  +- org.codehaus.groovy:groovy-datetime:jar:3.0.19:compile
+   |  +- org.codehaus.groovy:groovy-docgenerator:jar:3.0.19:compile
+   |  |  \- com.thoughtworks.qdox:qdox:jar:1.12.1:runtime
+   |  +- org.codehaus.groovy:groovy-groovydoc:jar:3.0.19:compile
+   |  |  \- com.github.javaparser:javaparser-core:jar:3.25.4:compile
+   |  +- org.codehaus.groovy:groovy-groovysh:jar:3.0.19:compile
+   |  |  \- jline:jline:jar:2.14.6:runtime
+   |  +- org.codehaus.groovy:groovy-jmx:jar:3.0.19:compile
+   |  +- org.codehaus.groovy:groovy-json:jar:3.0.19:compile
+   |  +- org.codehaus.groovy:groovy-jsr223:jar:3.0.19:compile
+   |  +- org.codehaus.groovy:groovy-macro:jar:3.0.19:compile
+   |  +- org.codehaus.groovy:groovy-nio:jar:3.0.19:compile
+   |  +- org.codehaus.groovy:groovy-servlet:jar:3.0.19:compile
+   |  +- org.codehaus.groovy:groovy-sql:jar:3.0.19:compile
+   |  +- org.codehaus.groovy:groovy-swing:jar:3.0.19:compile
+   |  +- org.codehaus.groovy:groovy-templates:jar:3.0.19:compile
+   |  +- org.codehaus.groovy:groovy-test:jar:3.0.19:compile
+   |  +- org.codehaus.groovy:groovy-test-junit5:jar:3.0.19:compile
+   |  |  +- org.junit.jupiter:junit-jupiter-api:jar:5.9.2:compile
+   |  |  |  \- org.opentest4j:opentest4j:jar:1.2.0:compile
+   |  |  +- org.junit.platform:junit-platform-launcher:jar:1.9.2:runtime
+   |  |  |  \- org.junit.platform:junit-platform-engine:jar:1.9.2:runtime
+   |  |  |     \- org.junit.platform:junit-platform-commons:jar:1.9.2:runtime
+   |  |  \- org.junit.jupiter:junit-jupiter-engine:jar:5.9.2:runtime
+   |  +- org.codehaus.groovy:groovy-testng:jar:3.0.19:compile
+   |  |  \- org.testng:testng:jar:7.5:runtime
+   |  |     +- com.beust:jcommander:jar:1.78:runtime
+   |  |     \- org.webjars:jquery:jar:3.5.1:runtime
+   |  \- org.codehaus.groovy:groovy-xml:jar:3.0.19:compile
+   +- org.codehaus.groovy:groovy-dateutil:jar:3.0.19:compile
+   +- rhino:js:jar:1.7R2:compile
+   +- saxon:saxon:jar:9.1.0.8j:compile
+   +- saxon:saxon-dom:jar:9.1.0.8j:compile
+   +- xmlunit:xmlunit:jar:1.2:compile
+   +- xalan:xalan:jar:2.7.2:compile
+   +- org.bouncycastle:bcprov-jdk15on:jar:1.64:compile
+   +- jtidy:jtidy:jar:r872-jdk15:compile
+   +- javax.jms:jms:jar:1.1:compile
+   +- hermesjms:hermes:jar:1.14:compile
+   +- amf:flex-messaging-common:jar:1.0:compile
+   +- amf:flex-messaging-core:jar:1.0:compile
+   +- amf:flex-messaging-opt:jar:1.0:compile
+   +- amf:flex-messaging-proxy:jar:1.0:compile
+   +- amf:flex-messaging-remoting:jar:1.0:compile
+   +- com.thoughtworks.xstream:xstream:jar:1.4.21:compile
+   |  \- io.github.x-stream:mxparser:jar:1.2.2:compile
+   |     \- xmlpull:xmlpull:jar:1.1.3.1:compile
+   +- net.sourceforge.cssparser:cssparser:jar:0.9.5:compile
+   +- net.sourceforge.nekohtml:nekohtml:jar:1.9.14:compile
+   +- xerces:xercesImpl:jar:2.12.0:compile
+   |  \- xml-apis:xml-apis:jar:1.4.01:compile
+   +- org.samba.jcifs:jcifs:jar:1.2.9:compile
+   +- l2fprod:l2fprod-common-directorychooser:jar:7.3:compile
+   +- l2fprod:l2fprod-common-fontchooser:jar:7.3:compile
+   +- org.apache.santuario:xmlsec:jar:2.1.7:compile
+   |  +- com.fasterxml.woodstox:woodstox-core:jar:5.0.3:compile
+   |  +- jakarta.xml.bind:jakarta.xml.bind-api:jar:2.3.2:compile
+   |  |  \- jakarta.activation:jakarta.activation-api:jar:1.2.1:compile
+   |  \- org.glassfish.jaxb:jaxb-runtime:jar:2.3.2:compile
+   |     +- org.glassfish.jaxb:txw2:jar:2.3.2:compile
+   |     +- com.sun.istack:istack-commons-runtime:jar:3.0.8:compile
+   |     +- org.jvnet.staxex:stax-ex:jar:1.8.1:compile
+   |     \- com.sun.xml.fastinfoset:FastInfoset:jar:1.2.16:compile
+   +- org.apache.xerces:xml-apis:jar:2.9.1:compile
+   +- xalan:serializer:jar:2.7.2:compile
+   +- org.apache.ws.commons.util:ws-commons-util:jar:1.0.2:compile
+   +- com.btr:proxy-vole:jar:20131209:compile
+   +- com.jayway.jsonpath:json-path:jar:2.4.0-fixed:compile
+   |  \- net.minidev:json-smart:jar:2.3:compile
+   |     \- net.minidev:accessors-smart:jar:1.2:compile
+   +- commons-httpclient:commons-httpclient:jar:3.1:compile
+   +- org.sonatype.install4j:i4jruntime:jar:5.1.14:compile
+   +- org.codehaus.mojo:animal-sniffer-annotations:jar:1.11:compile
+   +- com.graphql-java:graphql-java:jar:22.3:compile
+   |  +- com.graphql-java:java-dataloader:jar:3.3.0:compile
+   |  \- org.reactivestreams:reactive-streams:jar:1.0.3:compile
+   +- org.reflections:reflections:jar:0.10.2:compile
+   |  \- org.javassist:javassist:jar:3.28.0-GA:compile
+   +- com.miglayout:miglayout-swing:jar:11.0:compile
+   |  \- com.miglayout:miglayout-core:jar:11.0:compile
+   +- io.swagger:swagger-inflector:jar:1.0.28:compile
+   |  +- io.swagger:swagger-jersey2-jaxrs:jar:1.6.16:compile
+   |  |  \- io.swagger:swagger-jaxrs:jar:1.6.16:compile
+   |  +- org.glassfish.jersey.containers:jersey-container-servlet-core:jar:2.46:compile
+   |  +- org.glassfish.jersey.media:jersey-media-multipart:jar:2.46:compile
+   |  |  +- org.glassfish.jersey.core:jersey-common:jar:2.46:compile
+   |  |  |  +- jakarta.ws.rs:jakarta.ws.rs-api:jar:2.1.6:compile
+   |  |  |  +- jakarta.annotation:jakarta.annotation-api:jar:1.3.5:compile
+   |  |  |  +- org.glassfish.hk2.external:jakarta.inject:jar:2.6.1:compile
+   |  |  |  \- org.glassfish.hk2:osgi-resource-locator:jar:1.0.3:compile
+   |  |  \- org.jvnet.mimepull:mimepull:jar:1.9.15:compile
+   |  +- org.glassfish.jersey.core:jersey-client:jar:2.46:compile
+   |  +- org.glassfish.jersey.inject:jersey-hk2:jar:2.46:compile
+   |  +- org.apache.commons:commons-csv:jar:1.10.0:compile
+   |  +- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:jar:2.20.0:compile
+   |  |  +- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:jar:2.20.0:compile
+   |  |  \- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:jar:2.20.0:compile
+   |  |     \- javax.xml.bind:jaxb-api:jar:2.2.12:compile
+   |  +- com.fasterxml.jackson.datatype:jackson-datatype-joda:jar:2.20.0:compile
+   |  |  \- joda-time:joda-time:jar:2.12.7:compile
+   |  +- com.fasterxml.jackson.jaxrs:jackson-jaxrs-xml-provider:jar:2.20.0:compile
+   |  |  \- com.fasterxml.jackson.dataformat:jackson-dataformat-xml:jar:2.20.0:compile
+   |  +- com.github.java-json-tools:json-schema-validator:jar:2.2.14:compile
+   |  |  +- com.github.java-json-tools:jackson-coreutils-equivalence:jar:1.0:compile
+   |  |  |  \- com.github.java-json-tools:jackson-coreutils:jar:2.0:compile
+   |  |  |     \- com.github.java-json-tools:msg-simple:jar:1.2:compile
+   |  |  |        \- com.github.java-json-tools:btf:jar:1.3:compile
+   |  |  +- com.github.java-json-tools:json-schema-core:jar:1.2.14:compile
+   |  |  |  +- com.github.java-json-tools:uri-template:jar:0.10:compile
+   |  |  |  \- org.mozilla:rhino:jar:1.7.7.2:compile
+   |  |  +- com.sun.mail:mailapi:jar:1.6.2:compile
+   |  |  +- com.googlecode.libphonenumber:libphonenumber:jar:8.11.1:compile
+   |  |  \- net.sf.jopt-simple:jopt-simple:jar:5.0.4:compile
+   |  +- commons-fileupload:commons-fileupload:jar:1.6.0:compile
+   |  \- org.codehaus.woodstox:stax2-api:jar:3.1.4:compile
+   +- io.swagger:swagger-core:jar:1.6.16:compile
+   |  +- com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:jar:2.19.0:compile
+   |  +- io.swagger:swagger-models:jar:1.6.16:compile
+   |  |  \- io.swagger:swagger-annotations:jar:1.6.16:compile
+   |  \- org.yaml:snakeyaml:jar:2.4:compile
+   \- io.swagger:swagger-parser:jar:1.0.75:compile
+      \- io.swagger:swagger-parser-safe-url-resolver:jar:1.0.75:compile
