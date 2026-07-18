@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="panel">
+    <h2 th:text="${projectName}">Projekt</h2>
+    <p><span class="badge">Projekt</span></p>
+
+    <div class="alert alert-error" th:if="${panelError}" th:text="${panelError}">Fehler</div>
+    <div class="alert alert-success" th:if="${panelMessage}" th:text="${panelMessage}">OK</div>
+
+    <h3>TestSuites</h3>
+    <table class="table" th:unless="${#lists.isEmpty(suites)}">
+        <tbody>
+        <tr th:each="s, it : ${suites}">
+            <td>
+                <a th:attr="hx-get=@{/projects/{p}/items/{i}(p=${projectId},i=${s.id})}"
+                   hx-target="#detail" hx-swap="innerHTML" href="javascript:void(0)"
+                   th:text="${s.name}">Suite</a>
+                <span th:if="${s.disabled}" class="badge badge-off">deaktiviert</span>
+            </td>
+            <td class="right actions" th:if="${canEdit}">
+                <form th:unless="${it.first}" class="inline"
+                      th:action="@{/projects/{p}/testsuites/{s}/move(p=${projectId},s=${s.id})}" method="post"
+                      th:attr="hx-post=@{/projects/{p}/testsuites/{s}/move(p=${projectId},s=${s.id})}"
+                      hx-target="#detail" hx-swap="innerHTML">
+                    <input type="hidden" name="dir" value="up">
+                    <button class="btn btn-small" type="submit">↑</button>
+                </form>
+                <form th:unless="${it.last}" class="inline"
+                      th:action="@{/projects/{p}/testsuites/{s}/move(p=${projectId},s=${s.id})}" method="post"
+                      th:attr="hx-post=@{/projects/{p}/testsuites/{s}/move(p=${projectId},s=${s.id})}"
+                      hx-target="#detail" hx-swap="innerHTML">
+                    <input type="hidden" name="dir" value="down">
+                    <button class="btn btn-small" type="submit">↓</button>
+                </form>
+                <form class="inline"
+                      th:action="@{/projects/{p}/testsuites/{s}/delete(p=${projectId},s=${s.id})}" method="post"
+                      th:attr="hx-post=@{/projects/{p}/testsuites/{s}/delete(p=${projectId},s=${s.id})}"
+                      hx-target="#detail" hx-swap="innerHTML"
+                      hx-confirm="TestSuite mit allen TestCases löschen?">
+                    <button class="btn btn-small btn-danger" type="submit">Löschen</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <p class="muted" th:if="${#lists.isEmpty(suites)}">Keine TestSuites.</p>
+
+    <form th:if="${canEdit}" class="form-row"
+          th:action="@{/projects/{p}/testsuites(p=${projectId})}" method="post"
+          th:attr="hx-post=@{/projects/{p}/testsuites(p=${projectId})}"
+          hx-target="#detail" hx-swap="innerHTML">
+        <div><label>Neue TestSuite</label><input type="text" name="name" required></div>
+        <div class="form-row-submit"><button class="btn btn-primary" type="submit">Anlegen</button></div>
+    </form>
+
+    <div th:replace="~{fragments/properties :: props(${projectId}, ${holderId}, ${props}, ${canEdit})}"></div>
+    <p class="muted" th:unless="${canEdit}">Zum Bearbeiten die Projekt-Sperre übernehmen.</p>
+</div>
+
+</body>
+</html>

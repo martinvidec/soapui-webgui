@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- Wiederverwendbare Properties-Tabelle (FA-35) für Projekt/Suite/Case/Properties-Step -->
+<div th:fragment="props(projectId, holderId, props, canEdit)">
+    <h3>Properties</h3>
+    <table class="table" th:unless="${#lists.isEmpty(props)}">
+        <thead><tr><th>Name</th><th>Wert</th><th class="right"></th></tr></thead>
+        <tbody>
+        <tr th:each="p : ${props}">
+            <td><code th:text="${p.name}">name</code></td>
+            <td>
+                <form th:if="${canEdit}" class="form-inline"
+                      th:action="@{/projects/{pr}/properties/{h}(pr=${projectId},h=${holderId})}" method="post"
+                      th:attr="hx-post=@{/projects/{pr}/properties/{h}(pr=${projectId},h=${holderId})}"
+                      hx-target="#detail" hx-swap="innerHTML">
+                    <input type="hidden" name="name" th:value="${p.name}">
+                    <input type="text" name="value" th:value="${p.value}">
+                    <button class="btn btn-small" type="submit">Speichern</button>
+                </form>
+                <span th:unless="${canEdit}" th:text="${p.value}">wert</span>
+            </td>
+            <td class="right">
+                <form th:if="${canEdit}"
+                      th:action="@{/projects/{pr}/properties/{h}/delete(pr=${projectId},h=${holderId})}" method="post"
+                      th:attr="hx-post=@{/projects/{pr}/properties/{h}/delete(pr=${projectId},h=${holderId})}"
+                      hx-target="#detail" hx-swap="innerHTML" class="inline">
+                    <input type="hidden" name="name" th:value="${p.name}">
+                    <button class="btn btn-small btn-danger" type="submit">×</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <p class="muted" th:if="${#lists.isEmpty(props)}">Keine Properties.</p>
+    <form th:if="${canEdit}" class="form-row"
+          th:action="@{/projects/{pr}/properties/{h}(pr=${projectId},h=${holderId})}" method="post"
+          th:attr="hx-post=@{/projects/{pr}/properties/{h}(pr=${projectId},h=${holderId})}"
+          hx-target="#detail" hx-swap="innerHTML">
+        <div><label>Name</label><input type="text" name="name" required></div>
+        <div><label>Wert</label><input type="text" name="value"></div>
+        <div class="form-row-submit"><button class="btn btn-primary" type="submit">Anlegen</button></div>
+    </form>
+</div>
+
+</body>
+</html>
