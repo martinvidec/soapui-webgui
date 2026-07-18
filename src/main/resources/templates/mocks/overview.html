@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Mocks')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <div class="alert alert-highlight" th:each="w : ${autostartWarnings}" th:text="${w}">Warnung</div>
+
+    <div class="card">
+        <h1>MockServices <span class="muted">— alle Projekte</span></h1>
+
+        <p class="muted" th:if="${#lists.isEmpty(mocks)}">
+            Keine MockServices vorhanden — lade ein Projekt mit Mocks hoch.
+        </p>
+
+        <table class="table" th:unless="${#lists.isEmpty(mocks)}">
+            <thead>
+            <tr>
+                <th>Mock</th>
+                <th>Projekt</th>
+                <th>Typ</th>
+                <th>Port</th>
+                <th>Pfad</th>
+                <th>Status</th>
+                <th class="right">Aktionen</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="m : ${mocks}">
+                <td><a class="project-link"
+                       th:href="@{/projects/{id}(id=${m.projectId})}"
+                       th:text="${m.mockName}">Mock</a></td>
+                <td th:text="${m.projectName}">Projekt</td>
+                <td><span class="badge" th:text="${m.typeLabel}">Typ</span></td>
+                <td th:text="${m.port}">18089</td>
+                <td><code th:text="${m.path}">/</code></td>
+                <td>
+                    <span th:if="${m.running}" class="badge badge-ok">läuft</span>
+                    <span th:unless="${m.running}" class="badge badge-off">gestoppt</span>
+                    <span th:if="${m.autostart}" class="badge badge-warn">Autostart</span>
+                </td>
+                <td class="right actions">
+                    <form th:unless="${m.running}"
+                          th:action="@{/projects/{p}/mocks/{id}/start(p=${m.projectId},id=${m.mockId})}"
+                          method="post" class="inline">
+                        <button class="btn btn-small btn-primary" type="submit">Starten</button>
+                    </form>
+                    <form th:if="${m.running}"
+                          th:action="@{/projects/{p}/mocks/{id}/stop(p=${m.projectId},id=${m.mockId})}"
+                          method="post" class="inline">
+                        <button class="btn btn-small" type="submit">Stoppen</button>
+                    </form>
+                    <form th:action="@{/projects/{p}/mocks/{id}/autostart(p=${m.projectId},id=${m.mockId})}"
+                          method="post" class="inline">
+                        <input type="hidden" name="enabled" th:value="${!m.autostart}">
+                        <button class="btn btn-small" type="submit"
+                                th:text="${m.autostart} ? 'Autostart aus' : 'Autostart an'">Autostart</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>

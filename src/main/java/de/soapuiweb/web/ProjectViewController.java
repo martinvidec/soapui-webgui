@@ -32,10 +32,13 @@ public class ProjectViewController {
 
     private final ProjectService projectService;
     private final LockService lockService;
+    private final MockPanelModel mockPanelModel;
 
-    public ProjectViewController(ProjectService projectService, LockService lockService) {
+    public ProjectViewController(ProjectService projectService, LockService lockService,
+                                 MockPanelModel mockPanelModel) {
         this.projectService = projectService;
         this.lockService = lockService;
+        this.mockPanelModel = mockPanelModel;
     }
 
     public record TreeNode(String id, String name, String typeLabel, boolean hasChildren) {
@@ -81,6 +84,10 @@ public class ProjectViewController {
         ProjectHandle handle = requireHandle(id);
         lockService.touch(id, auth.getName());
         ModelItem item = requireItem(handle, itemId);
+        if (item instanceof com.eviware.soapui.impl.support.AbstractMockService<?, ?>) {
+            mockPanelModel.fill(id, itemId, null, model);
+            return "project/mock-panel :: panel";
+        }
         model.addAttribute("name", item.getName());
         model.addAttribute("typeLabel", ModelItems.typeLabel(item));
         model.addAttribute("itemId", item.getId());

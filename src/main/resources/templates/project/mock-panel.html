@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="panel">
+    <h2 th:text="${mockName}">Mock</h2>
+    <p>
+        <span class="badge" th:text="${typeLabel}">Typ</span>
+        <span th:if="${running}" class="badge badge-ok">läuft</span>
+        <span th:unless="${running}" class="badge badge-off">gestoppt</span>
+        <span th:if="${autostart}" class="badge badge-warn">Autostart</span>
+    </p>
+
+    <div class="alert alert-error" th:if="${panelError}" th:text="${panelError}">Fehler</div>
+
+    <table class="table kv">
+        <tr><th>Port</th><td th:text="${port}">18089</td></tr>
+        <tr><th>Pfad</th><td><code th:text="${path}">/mock</code></td></tr>
+        <tr><th>Operationen</th><td th:text="${operationCount}">1</td></tr>
+        <tr th:if="${running}">
+            <th>Endpoint</th>
+            <td><code th:text="'http://<server>:' + ${port} + ${path}">url</code>
+                <span class="muted">— ohne Login erreichbar</span></td>
+        </tr>
+    </table>
+
+    <div class="panel-actions">
+        <form th:unless="${running}" th:action="@{/projects/{p}/mocks/{m}/start(p=${projectId},m=${mockId})}"
+              method="post" class="inline"
+              th:attr="hx-post=@{/projects/{p}/mocks/{m}/start(p=${projectId},m=${mockId},panel=true)}"
+              hx-target="#detail" hx-swap="innerHTML">
+            <button class="btn btn-primary" type="submit">Mock starten</button>
+        </form>
+        <form th:if="${running}" th:action="@{/projects/{p}/mocks/{m}/stop(p=${projectId},m=${mockId})}"
+              method="post" class="inline"
+              th:attr="hx-post=@{/projects/{p}/mocks/{m}/stop(p=${projectId},m=${mockId},panel=true)}"
+              hx-target="#detail" hx-swap="innerHTML">
+            <button class="btn" type="submit">Mock stoppen</button>
+        </form>
+        <form th:action="@{/projects/{p}/mocks/{m}/autostart(p=${projectId},m=${mockId})}"
+              method="post" class="inline"
+              th:attr="hx-post=@{/projects/{p}/mocks/{m}/autostart(p=${projectId},m=${mockId},panel=true)}"
+              hx-target="#detail" hx-swap="innerHTML">
+            <input type="hidden" name="enabled" th:value="${!autostart}">
+            <button class="btn" type="submit"
+                    th:text="${autostart} ? 'Autostart deaktivieren' : 'Autostart aktivieren'">Autostart</button>
+        </form>
+    </div>
+
+    <div class="mock-log">
+        <h3>Request-Log <span class="muted">(letzte 500, live)</span></h3>
+        <div hx-ext="sse"
+             th:attr="sse-connect=@{/projects/{p}/mocks/{m}/log(p=${projectId},m=${mockId})}"
+             sse-swap="mocklog" hx-swap="afterbegin"
+             class="log-feed" id="mock-log-feed">
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

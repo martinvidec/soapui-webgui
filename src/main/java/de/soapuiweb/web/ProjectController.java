@@ -29,11 +29,14 @@ public class ProjectController {
 
     private final ProjectService projectService;
     private final de.soapuiweb.service.LockService lockService;
+    private final de.soapuiweb.service.MockManager mockManager;
 
     public ProjectController(ProjectService projectService,
-                             de.soapuiweb.service.LockService lockService) {
+                             de.soapuiweb.service.LockService lockService,
+                             de.soapuiweb.service.MockManager mockManager) {
         this.projectService = projectService;
         this.lockService = lockService;
+        this.mockManager = mockManager;
     }
 
     public record ProjectRow(String id, String name, String size, String uploadedBy,
@@ -45,6 +48,7 @@ public class ProjectController {
     public String list(Model model) {
         List<ProjectRow> rows = projectService.list().stream().map(this::toRow).toList();
         model.addAttribute("projects", rows);
+        model.addAttribute("autostartWarnings", mockManager.autostartWarnings());
         return "index";
     }
 
@@ -82,6 +86,7 @@ public class ProjectController {
                     "Löschen nicht möglich: " + e.getMessage());
             return "redirect:/";
         }
+        mockManager.stopAllOf(id);
         projectService.delete(id);
         lockService.releaseAllOf(id);
         redirect.addFlashAttribute("message", "Projekt '" + handle.meta().name() + "' gelöscht");
@@ -97,7 +102,7 @@ public class ProjectController {
                 DATE_FORMAT.format(Instant.ofEpochMilli(handle.meta().uploadedAtEpochMs())),
                 DATE_FORMAT.format(Instant.ofEpochMilli(handle.meta().lastModifiedAtEpochMs())),
                 lockService.ownerOf(handle.id()).orElse(null),
-                0);     // laufende Mocks folgen mit Issue #5
+                (int) mockManager.runningCountOf(handle.id()));
     }
 
     private static String formatSize(long bytes) {

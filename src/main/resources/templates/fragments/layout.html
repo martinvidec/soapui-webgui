@@ -7,6 +7,7 @@
     <title th:text="${title} + ' · SoapUI WebGUI'">SoapUI WebGUI</title>
     <link rel="stylesheet" th:href="@{/css/app.css}">
     <script th:src="@{/js/htmx.min.js}" defer></script>
+    <script th:src="@{/js/htmx-sse.js}" defer></script>
 </head>
 <body>
 
@@ -15,6 +16,7 @@
         <a class="brand" th:href="@{/}">SoapUI <span>WebGUI</span></a>
         <nav class="topnav">
             <a th:href="@{/}">Projekte</a>
+            <a th:href="@{/mocks}">Mocks</a>
             <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/users}">Nutzer</a>
         </nav>
         <div class="topbar-user">
