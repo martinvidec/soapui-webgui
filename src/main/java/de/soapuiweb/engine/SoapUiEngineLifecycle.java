@@ -45,6 +45,9 @@ public class SoapUiEngineLifecycle implements SmartLifecycle {
         // Ports beim Mock-Stop wirklich freigeben — sonst hält die JettyMockEngine
         // die Connectoren offen und blockiert den Port für andere Prozesse (FA-11)
         SoapUI.getSettings().setBoolean(com.eviware.soapui.settings.HttpSettings.LEAVE_MOCKENGINE, false);
+        // Keep-Alive-Verbindungen nicht poolen: vermeidet "failed to respond" durch
+        // stale Connections bei aufeinanderfolgenden Submits (Robustheit vor Durchsatz)
+        SoapUI.getSettings().setBoolean(com.eviware.soapui.settings.HttpSettings.CLOSE_CONNECTIONS, true);
         running = true;
         log.info("SoapUI-Engine {} initialisiert (headless), Settings: {}", SoapUI.SOAPUI_VERSION, settingsFile);
     }
