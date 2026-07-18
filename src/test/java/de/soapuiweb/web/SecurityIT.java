@@ -52,6 +52,14 @@ class SecurityIT {
     }
 
     @Test
+    void actuatorInfoRequiresAdmin() throws Exception {
+        mockMvc.perform(get("/actuator/info").with(user("someone").roles("USER")))
+                .andExpect(status().isForbidden());
+        mockMvc.perform(get("/actuator/info").with(user("boss").roles("ADMIN")))
+                .andExpect(status().isOk());
+    }
+
+    @Test
     void loginWithSeededUserSucceeds() throws Exception {
         String password = userService.createUser("login.test", UserRole.USER);
         mockMvc.perform(formLogin().user("login.test").password(password))

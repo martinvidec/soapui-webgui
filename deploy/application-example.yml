@@ -1,0 +1,42 @@
+# Kommentierte Konfigurationsreferenz für die SoapUI WebGUI.
+# Ablage z. B. unter /etc/soapui-webgui/application.yml und beim Start via
+# --spring.config.additional-location=file:/etc/soapui-webgui/application.yml einbinden.
+
+server:
+  # App-Port — im Regelbetrieb NICHT direkt freigeben, sondern hinter einen
+  # Reverse-Proxy mit TLS legen (siehe docs/betrieb.md)
+  port: 8080
+  servlet:
+    session:
+      # Session-Timeout der Web-Oberfläche
+      timeout: 60m
+
+spring:
+  servlet:
+    multipart:
+      # Maximale Größe hochgeladener Projektdateien
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+app:
+  # Wurzelverzeichnis für Projekte, Nutzer (users.json) und Engine-Settings.
+  # Muss für den Service-Benutzer beschreibbar sein — einziges beschreibbares
+  # Verzeichnis in der systemd-Härtung. Backup = dieses Verzeichnis sichern.
+  data-dir: /var/lib/soapui-webgui
+
+  # Edit-Sperre: Ablauf ohne Aktivität in Minuten (FA-06)
+  lock-timeout-minutes: 30
+
+  mock:
+    # Portbereich, aus dem MockServices Ports binden dürfen (FA-15).
+    # Die Ports kommen 1:1 aus den Projektdateien; die Firewall muss diesen
+    # Bereich für externe Consumer freigeben.
+    port-min: 18000
+    port-max: 18999
+
+management:
+  endpoints:
+    web:
+      exposure:
+        # health ist ohne Login erreichbar (Monitoring), alles Übrige nur ADMIN
+        include: health,info
