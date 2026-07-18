@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="panel">
+    <p class="breadcrumb">
+        <a th:attr="hx-get=@{/projects/{p}/items/{i}(p=${projectId},i=${projectItemId})}"
+           hx-target="#detail" hx-swap="innerHTML" href="javascript:void(0)">Projekt</a> ›
+        <strong th:text="${suiteName}">Suite</strong>
+    </p>
+    <h2 th:text="${suiteName}">TestSuite</h2>
+    <p>
+        <span class="badge">TestSuite</span>
+        <span th:if="${disabled}" class="badge badge-off">deaktiviert</span>
+    </p>
+
+    <div class="alert alert-error" th:if="${panelError}" th:text="${panelError}">Fehler</div>
+    <div class="alert alert-success" th:if="${panelMessage}" th:text="${panelMessage}">OK</div>
+
+    <div class="panel-actions" th:if="${canEdit}">
+        <form class="inline form-inline"
+              th:action="@{/projects/{p}/testsuites/{s}/rename(p=${projectId},s=${suiteId})}" method="post"
+              th:attr="hx-post=@{/projects/{p}/testsuites/{s}/rename(p=${projectId},s=${suiteId})}"
+              hx-target="#detail" hx-swap="innerHTML">
+            <input type="text" name="name" th:value="${suiteName}" required>
+            <button class="btn btn-small" type="submit">Umbenennen</button>
+        </form>
+        <form class="inline form-inline"
+              th:action="@{/projects/{p}/testsuites/{s}/clone(p=${projectId},s=${suiteId})}" method="post"
+              th:attr="hx-post=@{/projects/{p}/testsuites/{s}/clone(p=${projectId},s=${suiteId})}"
+              hx-target="#detail" hx-swap="innerHTML">
+            <input type="text" name="name" th:value="${suiteName + ' Kopie'}" required>
+            <button class="btn btn-small" type="submit">Klonen</button>
+        </form>
+        <form class="inline"
+              th:action="@{/projects/{p}/testsuites/{s}/disable(p=${projectId},s=${suiteId})}" method="post"
+              th:attr="hx-post=@{/projects/{p}/testsuites/{s}/disable(p=${projectId},s=${suiteId})}"
+              hx-target="#detail" hx-swap="innerHTML">
+            <input type="hidden" name="disabled" th:value="${!disabled}">
+            <button class="btn btn-small" type="submit"
+                    th:text="${disabled} ? 'Aktivieren' : 'Deaktivieren'">Toggle</button>
+        </form>
+    </div>
+
+    <h3>TestCases</h3>
+    <table class="table" th:unless="${#lists.isEmpty(cases)}">
+        <tbody>
+        <tr th:each="c, it : ${cases}">
+            <td>
+                <a th:attr="hx-get=@{/projects/{p}/items/{i}(p=${projectId},i=${c.id})}"
+                   hx-target="#detail" hx-swap="innerHTML" href="javascript:void(0)"
+                   th:text="${c.name}">Case</a>
+                <span th:if="${c.disabled}" class="badge badge-off">deaktiviert</span>
+            </td>
+            <td class="right actions" th:if="${canEdit}">
+                <form th:unless="${it.first}" class="inline"
+                      th:action="@{/projects/{p}/testcases/{c}/move(p=${projectId},c=${c.id})}" method="post"
+                      th:attr="hx-post=@{/projects/{p}/testcases/{c}/move(p=${projectId},c=${c.id})}"
+                      hx-target="#detail" hx-swap="innerHTML">
+                    <input type="hidden" name="dir" value="up">
+                    <button class="btn btn-small" type="submit">↑</button>
+                </form>
+                <form th:unless="${it.last}" class="inline"
+                      th:action="@{/projects/{p}/testcases/{c}/move(p=${projectId},c=${c.id})}" method="post"
+                      th:attr="hx-post=@{/projects/{p}/testcases/{c}/move(p=${projectId},c=${c.id})}"
+                      hx-target="#detail" hx-swap="innerHTML">
+                    <input type="hidden" name="dir" value="down">
+                    <button class="btn btn-small" type="submit">↓</button>
+                </form>
+                <form class="inline"
+                      th:action="@{/projects/{p}/testcases/{c}/delete(p=${projectId},c=${c.id})}" method="post"
+                      th:attr="hx-post=@{/projects/{p}/testcases/{c}/delete(p=${projectId},c=${c.id})}"
+                      hx-target="#detail" hx-swap="innerHTML" hx-confirm="TestCase löschen?">
+                    <button class="btn btn-small btn-danger" type="submit">Löschen</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <p class="muted" th:if="${#lists.isEmpty(cases)}">Keine TestCases.</p>
+
+    <form th:if="${canEdit}" class="form-row"
+          th:action="@{/projects/{p}/testsuites/{s}/testcases(p=${projectId},s=${suiteId})}" method="post"
+          th:attr="hx-post=@{/projects/{p}/testsuites/{s}/testcases(p=${projectId},s=${suiteId})}"
+          hx-target="#detail" hx-swap="innerHTML">
+        <div><label>Neuer TestCase</label><input type="text" name="name" required></div>
+        <div class="form-row-submit"><button class="btn btn-primary" type="submit">Anlegen</button></div>
+    </form>
+
+    <div th:replace="~{fragments/properties :: props(${projectId}, ${holderId}, ${props}, ${canEdit})}"></div>
+    <p class="muted" th:unless="${canEdit}">Zum Bearbeiten die Projekt-Sperre übernehmen.</p>
+</div>
+
+</body>
+</html>

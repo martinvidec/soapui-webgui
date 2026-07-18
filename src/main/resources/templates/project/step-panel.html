@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="panel">
+    <p class="breadcrumb">
+        <a th:attr="hx-get=@{/projects/{p}/items/{i}(p=${projectId},i=${caseId})}"
+           hx-target="#detail" hx-swap="innerHTML" href="javascript:void(0)"
+           th:text="${caseName}">Case</a> ›
+        <strong th:text="${stepName}">Step</strong>
+    </p>
+    <h2 th:text="${stepName}">TestStep</h2>
+    <p><span class="badge" th:text="${typeLabel}">Typ</span></p>
+
+    <div class="alert alert-error" th:if="${panelError}" th:text="${panelError}">Fehler</div>
+    <div class="alert alert-success" th:if="${panelMessage}" th:text="${panelMessage}">OK</div>
+
+    <div class="panel-actions" th:if="${canEdit}">
+        <form class="inline form-inline"
+              th:action="@{/projects/{p}/teststeps/{s}/rename(p=${projectId},s=${stepId})}" method="post"
+              th:attr="hx-post=@{/projects/{p}/teststeps/{s}/rename(p=${projectId},s=${stepId})}"
+              hx-target="#detail" hx-swap="innerHTML">
+            <input type="text" name="name" th:value="${stepName}" required>
+            <button class="btn btn-small" type="submit">Umbenennen</button>
+        </form>
+    </div>
+
+    <!-- Groovy-Step: Skript-Editor (Log-Bridge und Setup/TearDown folgen in #11) -->
+    <form th:if="${isGroovy}"
+          th:action="@{/projects/{p}/teststeps/{s}/script(p=${projectId},s=${stepId})}" method="post"
+          th:attr="hx-post=@{/projects/{p}/teststeps/{s}/script(p=${projectId},s=${stepId})}"
+          hx-target="#detail" hx-swap="innerHTML">
+        <label>Groovy-Skript</label>
+        <textarea name="script" class="code-editor" data-mode="groovy" rows="10"
+                  th:text="${script}" th:readonly="${!canEdit}"></textarea>
+        <button class="btn btn-primary" type="submit" th:disabled="${!canEdit}">Skript speichern</button>
+    </form>
+
+    <!-- Delay-Step -->
+    <form th:if="${isDelay}" class="form-row"
+          th:action="@{/projects/{p}/teststeps/{s}/delay(p=${projectId},s=${stepId})}" method="post"
+          th:attr="hx-post=@{/projects/{p}/teststeps/{s}/delay(p=${projectId},s=${stepId})}"
+          hx-target="#detail" hx-swap="innerHTML">
+        <div>
+            <label>Delay <span class="muted">(Millisekunden, Property-Expansion erlaubt)</span></label>
+            <input type="text" name="delay" th:value="${delayString}" th:readonly="${!canEdit}">
+        </div>
+        <div class="form-row-submit">
+            <button class="btn btn-primary" type="submit" th:disabled="${!canEdit}">Speichern</button>
+        </div>
+    </form>
+
+    <!-- Property-Transfer-Step (FA-35): Transfers editieren -->
+    <div th:if="${isTransfer}">
+        <h3>Transfers</h3>
+        <div th:each="t : ${transfers}" class="card transfer-card">
+            <form th:action="@{/projects/{p}/teststeps/{s}/transfers/{i}(p=${projectId},s=${stepId},i=${t.index})}"
+                  method="post"
+                  th:attr="hx-post=@{/projects/{p}/teststeps/{s}/transfers/{i}(p=${projectId},s=${stepId},i=${t.index})}"
+                  hx-target="#detail" hx-swap="innerHTML">
+                <strong th:text="${t.name}">Transfer</strong>
+                <div class="form-row">
+                    <div>
+                        <label>Quelle: Step</label>
+                        <select name="sourceStep" th:disabled="${!canEdit}">
+                            <option th:each="n : ${stepNames}" th:value="${n}" th:text="${n}"
+                                    th:selected="${n == t.sourceStep}">Step</option>
+                        </select>
+                    </div>
+                    <div><label>Quelle: Property</label>
+                        <input type="text" name="sourceProperty" th:value="${t.sourceProperty}"
+                               placeholder="Response" th:readonly="${!canEdit}"></div>
+                    <div><label>Quelle: XPath <span class="muted">(optional)</span></label>
+                        <input type="text" name="sourcePath" th:value="${t.sourcePath}"
+                               th:readonly="${!canEdit}"></div>
+                </div>
+                <div class="form-row">
+                    <div>
+                        <label>Ziel: Step</label>
+                        <select name="targetStep" th:disabled="${!canEdit}">
+                            <option th:each="n : ${stepNames}" th:value="${n}" th:text="${n}"
+                                    th:selected="${n == t.targetStep}">Step</option>
+                        </select>
+                    </div>
+                    <div><label>Ziel: Property</label>
+                        <input type="text" name="targetProperty" th:value="${t.targetProperty}"
+                               placeholder="Request" th:readonly="${!canEdit}"></div>
+                    <div><label>Ziel: XPath <span class="muted">(optional)</span></label>
+                        <input type="text" name="targetPath" th:value="${t.targetPath}"
+                               th:readonly="${!canEdit}"></div>
+                </div>
+                <div class="panel-actions">
+                    <button class="btn btn-primary btn-small" type="submit"
+                            th:disabled="${!canEdit}">Transfer speichern</button>
+                    <button class="btn btn-small btn-danger" type="submit" th:if="${canEdit}"
+                            th:attr="hx-post=@{/projects/{p}/teststeps/{s}/transfers/{i}/delete(p=${projectId},s=${stepId},i=${t.index})}"
+                            hx-target="#detail" hx-swap="innerHTML"
+                            hx-confirm="Transfer löschen?">Löschen</button>
+                </div>
+            </form>
+        </div>
+        <form th:if="${canEdit}" class="form-row"
+              th:action="@{/projects/{p}/teststeps/{s}/transfers(p=${projectId},s=${stepId})}" method="post"
+              th:attr="hx-post=@{/projects/{p}/teststeps/{s}/transfers(p=${projectId},s=${stepId})}"
+              hx-target="#detail" hx-swap="innerHTML">
+            <div><label>Neuer Transfer</label><input type="text" name="name" required></div>
+            <div class="form-row-submit"><button class="btn btn-primary" type="submit">Anlegen</button></div>
+        </form>
+    </div>
+
+    <!-- Properties-Step: eigene Properties -->
+    <div th:if="${isPropertiesStep}"
+         th:replace="~{fragments/properties :: props(${projectId}, ${holderId}, ${props}, ${canEdit})}"></div>
+
+    <!-- Request-Step: eingebetteter Request im Request-Editor -->
+    <p th:if="${childRequestId}">
+        <a class="btn"
+           th:attr="hx-get=@{/projects/{p}/items/{i}(p=${projectId},i=${childRequestId})}"
+           hx-target="#detail" hx-swap="innerHTML" href="javascript:void(0)">
+            Eingebetteten Request im Editor öffnen
+        </a>
+    </p>
+
+    <p class="muted" th:unless="${canEdit}">Zum Bearbeiten die Projekt-Sperre übernehmen.</p>
+</div>
+
+</body>
+</html>

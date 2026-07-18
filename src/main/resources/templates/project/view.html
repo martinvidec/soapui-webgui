@@ -32,7 +32,10 @@
     <div class="workspace">
         <aside class="card tree-panel">
             <div class="tree-head">
-                <h2 th:text="${projectName}">Projekt</h2>
+                <h2><a class="project-link"
+                       th:attr="hx-get=@{/projects/{p}/items/{i}(p=${projectId},i=${projectItemId})}"
+                       hx-target="#detail" hx-swap="innerHTML" href="javascript:void(0)"
+                       th:text="${projectName}" title="Projekt-Eigenschaften und TestSuites">Projekt</a></h2>
                 <a class="btn btn-small" th:href="@{/projects/{id}/download(id=${projectId})}">Download</a>
             </div>
             <div class="tree">

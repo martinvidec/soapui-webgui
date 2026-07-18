@@ -34,14 +34,17 @@ public class ProjectViewController {
     private final LockService lockService;
     private final MockPanelModel mockPanelModel;
     private final RequestPanelModel requestPanelModel;
+    private final TestPanelModel testPanelModel;
 
     public ProjectViewController(ProjectService projectService, LockService lockService,
                                  MockPanelModel mockPanelModel,
-                                 RequestPanelModel requestPanelModel) {
+                                 RequestPanelModel requestPanelModel,
+                                 TestPanelModel testPanelModel) {
         this.projectService = projectService;
         this.lockService = lockService;
         this.mockPanelModel = mockPanelModel;
         this.requestPanelModel = requestPanelModel;
+        this.testPanelModel = testPanelModel;
     }
 
     public record TreeNode(String id, String name, String typeLabel, boolean hasChildren) {
@@ -58,6 +61,7 @@ public class ProjectViewController {
         fillLockModel(id, auth, model);
         model.addAttribute("projectId", id);
         model.addAttribute("projectName", handle.meta().name());
+        model.addAttribute("projectItemId", handle.project().getId());
         model.addAttribute("roots",
                 ModelItems.childrenOf(handle.project()).stream().map(TreeNode::of).toList());
         return "project/view";
@@ -111,6 +115,22 @@ public class ProjectViewController {
         if (item instanceof com.eviware.soapui.model.iface.Interface) {
             requestPanelModel.fillInterface(id, itemId, null, null, auth.getName(), model);
             return "project/interface-panel :: panel";
+        }
+        if (item instanceof com.eviware.soapui.impl.wsdl.WsdlProject) {
+            testPanelModel.fillProject(id, null, null, auth.getName(), model);
+            return "project/project-panel :: panel";
+        }
+        if (item instanceof com.eviware.soapui.model.testsuite.TestSuite) {
+            testPanelModel.fillSuite(id, itemId, null, null, auth.getName(), model);
+            return "project/suite-panel :: panel";
+        }
+        if (item instanceof com.eviware.soapui.model.testsuite.TestCase) {
+            testPanelModel.fillCase(id, itemId, null, null, auth.getName(), model);
+            return "project/case-panel :: panel";
+        }
+        if (item instanceof com.eviware.soapui.model.testsuite.TestStep) {
+            testPanelModel.fillStep(id, itemId, null, null, auth.getName(), model);
+            return "project/step-panel :: panel";
         }
         model.addAttribute("name", item.getName());
         model.addAttribute("typeLabel", ModelItems.typeLabel(item));
