@@ -221,3 +221,29 @@ input:focus, select:focus {
 .log-panel { margin-top: 1.25rem; }
 .kv th { width: 160px; }
 .lockbar { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+
+/* Mock-Panel & Request-Log */
+.panel-actions { display: flex; gap: .5rem; margin: 1rem 0; flex-wrap: wrap; }
+.mock-log h3 { margin: 1.25rem 0 .5rem; font-size: 1rem; }
+.log-feed {
+    max-height: 340px;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: .5rem .75rem;
+    background: #fbfcfd;
+    font-size: .88rem;
+}
+.log-entry { padding: .25rem 0; border-bottom: 1px dashed var(--border); }
+.log-entry:last-child { border-bottom: none; }
+.log-time { color: var(--text-muted); font-variant-numeric: tabular-nums; margin-right: .35rem; }
+.log-entry details { margin-top: .25rem; }
+.log-entry summary { cursor: pointer; color: var(--text-muted); font-size: .82rem; }
+.log-entry pre {
+    background: #f1f4f7;
+    border-radius: 6px;
+    padding: .5rem;
+    overflow-x: auto;
+    font-size: .8rem;
+    max-height: 200px;
+}

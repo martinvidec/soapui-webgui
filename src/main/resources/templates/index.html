@@ -6,6 +6,8 @@
 <main class="page">
     <div th:replace="~{fragments/layout :: flash}"></div>
 
+    <div class="alert alert-highlight" th:each="w : ${autostartWarnings}" th:text="${w}">Warnung</div>
+
     <div class="card">
         <h1>Projekte</h1>
 

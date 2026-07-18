@@ -126,6 +126,23 @@ public class ProjectService implements SmartLifecycle {
         log.info("Projekt '{}' ({}) gelöscht", handle.meta().name(), projectId);
     }
 
+    /** Autostart-Flag im meta.json-Sidecar pflegen (FA-14) — nie in der Projekt-XML. */
+    public void setAutostart(String projectId, String mockItemId, boolean enabled) {
+        ProjectHandle handle = require(projectId);
+        java.util.LinkedHashSet<String> ids =
+                new java.util.LinkedHashSet<>(handle.meta().autostartMockIds());
+        if (enabled) {
+            ids.add(mockItemId);
+        } else {
+            ids.remove(mockItemId);
+        }
+        ProjectMeta updated = new ProjectMeta(handle.meta().name(), handle.meta().uploadedBy(),
+                handle.meta().uploadedAtEpochMs(), handle.meta().lastModifiedAtEpochMs(),
+                List.copyOf(ids));
+        store.writeMeta(projectId, updated);
+        handle.updateMeta(updated);
+    }
+
     private void release(WsdlProject project) {
         try {
             project.release();
