@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Anmelden')}"></head>
+<body class="centered-page">
+<main class="card login-card">
+    <h1 class="brand-large">SoapUI <span>WebGUI</span></h1>
+    <p class="muted">Bitte melde dich an.</p>
+
+    <div class="alert alert-error" th:if="${param.error}">Login fehlgeschlagen — Benutzername oder Passwort falsch, oder Account deaktiviert.</div>
+    <div class="alert alert-success" th:if="${param.logout}">Du wurdest abgemeldet.</div>
+
+    <form th:action="@{/login}" method="post">
+        <label for="username">Benutzername</label>
+        <input type="text" id="username" name="username" autofocus autocomplete="username" required>
+        <label for="password">Passwort</label>
+        <input type="password" id="password" name="password" autocomplete="current-password" required>
+        <button class="btn btn-primary btn-block" type="submit">Anmelden</button>
+    </form>
+</main>
+</body>
+</html>
