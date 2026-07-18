@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${title} + ' · SoapUI WebGUI'">SoapUI WebGUI</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+
+<header th:fragment="header" class="topbar">
+    <div class="topbar-inner">
+        <a class="brand" th:href="@{/}">SoapUI <span>WebGUI</span></a>
+        <nav class="topnav">
+            <a th:href="@{/}">Projekte</a>
+            <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/users}">Nutzer</a>
+        </nav>
+        <div class="topbar-user">
+            <a class="username" th:href="@{/profile/password}"
+               th:text="${#authentication.name}" title="Passwort ändern">user</a>
+            <form th:action="@{/logout}" method="post" class="inline">
+                <button class="btn btn-ghost" type="submit">Abmelden</button>
+            </form>
+        </div>
+    </div>
+</header>
+
+<div th:fragment="flash" class="flash-area">
+    <div class="alert alert-error" th:if="${error}" th:text="${error}">Fehler</div>
+    <div class="alert alert-success" th:if="${message}" th:text="${message}">OK</div>
+</div>
+
+</body>
+</html>

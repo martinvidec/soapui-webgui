@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Nutzerverwaltung')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <div class="alert alert-highlight" th:if="${initialPassword}">
+        Initialpasswort für <strong th:text="${createdLogin}">login</strong>:
+        <code th:text="${initialPassword}">pw</code>
+        — jetzt notieren, es wird nur einmal angezeigt. Der Nutzer muss es beim ersten Login ändern.
+    </div>
+
+    <div class="card">
+        <h1>Nutzerverwaltung</h1>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Login</th>
+                <th>Rolle</th>
+                <th>Status</th>
+                <th class="right">Aktionen</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="u : ${users}">
+                <td th:text="${u.login}">login</td>
+                <td><span class="badge" th:text="${u.role}">USER</span></td>
+                <td>
+                    <span th:if="${u.active}" class="badge badge-ok">aktiv</span>
+                    <span th:unless="${u.active}" class="badge badge-off">deaktiviert</span>
+                    <span th:if="${u.mustChangePassword}" class="badge badge-warn">Initialpasswort</span>
+                </td>
+                <td class="right actions">
+                    <form th:if="${u.active}" th:action="@{/admin/users/{l}/deactivate(l=${u.login})}" method="post" class="inline">
+                        <button class="btn btn-small" type="submit">Deaktivieren</button>
+                    </form>
+                    <form th:unless="${u.active}" th:action="@{/admin/users/{l}/activate(l=${u.login})}" method="post" class="inline">
+                        <button class="btn btn-small" type="submit">Aktivieren</button>
+                    </form>
+                    <form th:action="@{/admin/users/{l}/reset-password(l=${u.login})}" method="post" class="inline">
+                        <button class="btn btn-small" type="submit">Passwort zurücksetzen</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card">
+        <h2>Neuen Nutzer anlegen</h2>
+        <form th:action="@{/admin/users}" method="post" class="form-row">
+            <div>
+                <label for="login">Login</label>
+                <input type="text" id="login" name="login" pattern="[a-zA-Z0-9._-]{3,32}" required>
+            </div>
+            <div>
+                <label for="role">Rolle</label>
+                <select id="role" name="role">
+                    <option value="USER" selected>USER</option>
+                    <option value="ADMIN">ADMIN</option>
+                </select>
+            </div>
+            <div class="form-row-submit">
+                <button class="btn btn-primary" type="submit">Anlegen</button>
+            </div>
+        </form>
+        <p class="muted">Das Initialpasswort wird generiert und nach dem Anlegen einmalig angezeigt.</p>
+    </div>
+</main>
+</body>
+</html>
