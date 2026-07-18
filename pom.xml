@@ -104,12 +104,10 @@
                     <groupId>org.openjfx</groupId>
                     <artifactId>*</artifactId>
                 </exclusion>
-                <exclusion>
-                    <groupId>com.jgoodies</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-                <!-- RSyntaxTextArea NICHT ausschließen: UISupport.<clinit> referenziert
-                     org.fife.ui.rtextarea.RTextArea auch headless (EngineSmokeIT schlug fehl) -->
+                <!-- RSyntaxTextArea und JGoodies NICHT ausschließen: UISupport.<clinit>
+                     referenziert RTextArea, SimpleContainsAssertion.<clinit> referenziert
+                     com.jgoodies.forms.layout.CellConstraints — beides auch headless
+                     (EngineSmokeIT bzw. AssertionIT schlugen fehl) -->
                 <!-- commons-logging kollidiert mit Spring-JCL (liefert dieselben Klassen und
                      routet nach SLF4J/Log4j2) -->
                 <exclusion>

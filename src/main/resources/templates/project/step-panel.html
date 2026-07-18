@@ -112,6 +112,82 @@
     <div th:if="${isPropertiesStep}"
          th:replace="~{fragments/properties :: props(${projectId}, ${holderId}, ${props}, ${canEdit})}"></div>
 
+    <!-- Assertions (FA-32): generisch über die Engine-Registry -->
+    <div th:if="${isAssertable}">
+        <h3>Assertions</h3>
+        <div th:each="a : ${assertions}" class="card transfer-card">
+            <form th:action="@{/projects/{p}/teststeps/{s}/assertions/{a}(p=${projectId},s=${stepId},a=${a.id})}"
+                  method="post"
+                  th:attr="hx-post=@{/projects/{p}/teststeps/{s}/assertions/{a}(p=${projectId},s=${stepId},a=${a.id})}"
+                  hx-target="#detail" hx-swap="innerHTML">
+                <strong th:text="${a.name}">Assertion</strong>
+                <span class="node-type" th:text="${a.label}">Typ</span>
+
+                <th:block th:switch="${a.kind}">
+                    <div th:case="'contains'" class="form-row">
+                        <div style="flex:2"><label>Token</label>
+                            <input type="text" name="token" th:value="${a.token}" th:readonly="${!canEdit}"></div>
+                        <div><label class="checkbox-label">
+                            <input type="checkbox" name="ignoreCase" value="true"
+                                   th:checked="${a.ignoreCase}" th:disabled="${!canEdit}">
+                            Groß-/Kleinschreibung ignorieren</label></div>
+                    </div>
+                    <div th:case="'xpath'">
+                        <label>XPath-Ausdruck</label>
+                        <textarea name="path" rows="2" th:text="${a.path}" th:readonly="${!canEdit}"></textarea>
+                        <label>Erwarteter Inhalt</label>
+                        <textarea name="expectedContent" rows="2" th:text="${a.expectedContent}"
+                                  th:readonly="${!canEdit}"></textarea>
+                    </div>
+                    <div th:case="'script'">
+                        <label>Groovy-Skript <span class="muted">(assert-Ausdrücke)</span></label>
+                        <textarea name="script" class="code-editor" data-mode="groovy" rows="4"
+                                  th:text="${a.script}" th:readonly="${!canEdit}"></textarea>
+                    </div>
+                    <div th:case="'sla'" class="form-row">
+                        <div><label>Max. Antwortzeit (ms)</label>
+                            <input type="text" name="sla" th:value="${a.sla}" th:readonly="${!canEdit}"></div>
+                    </div>
+                    <div th:case="'codes'" class="form-row">
+                        <div><label>HTTP-Status-Codes <span class="muted">(kommagetrennt)</span></label>
+                            <input type="text" name="codes" th:value="${a.codes}" th:readonly="${!canEdit}"></div>
+                    </div>
+                    <div th:case="'raw'">
+                        <label>Konfiguration (XML) <span class="muted">— generischer Editor</span></label>
+                        <textarea name="configXml" class="code-editor" data-mode="xml" rows="5"
+                                  th:text="${a.configXml}" th:readonly="${!canEdit}"></textarea>
+                    </div>
+                    <p th:case="*" class="muted">Dieser Assertion-Typ benötigt keine Konfiguration.</p>
+                </th:block>
+
+                <div class="panel-actions">
+                    <button th:if="${canEdit and a.kind != 'none'}" class="btn btn-primary btn-small"
+                            type="submit">Assertion speichern</button>
+                    <button class="btn btn-small btn-danger" type="submit" th:if="${canEdit}"
+                            th:attr="hx-post=@{/projects/{p}/teststeps/{s}/assertions/{a}/delete(p=${projectId},s=${stepId},a=${a.id})}"
+                            hx-target="#detail" hx-swap="innerHTML"
+                            hx-confirm="Assertion löschen?">Löschen</button>
+                </div>
+            </form>
+        </div>
+        <p class="muted" th:if="${#lists.isEmpty(assertions)}">Keine Assertions.</p>
+
+        <form th:if="${canEdit}" class="form-row"
+              th:action="@{/projects/{p}/teststeps/{s}/assertions(p=${projectId},s=${stepId})}" method="post"
+              th:attr="hx-post=@{/projects/{p}/teststeps/{s}/assertions(p=${projectId},s=${stepId})}"
+              hx-target="#detail" hx-swap="innerHTML">
+            <div style="flex:2">
+                <label>Neue Assertion <span class="muted">(alle Typen der Engine-Registry)</span></label>
+                <select name="label">
+                    <option th:each="t : ${assertionTypes}" th:value="${t}" th:text="${t}">Typ</option>
+                </select>
+            </div>
+            <div class="form-row-submit">
+                <button class="btn btn-primary" type="submit">Anlegen</button>
+            </div>
+        </form>
+    </div>
+
     <!-- Request-Step: eingebetteter Request im Request-Editor -->
     <p th:if="${childRequestId}">
         <a class="btn"
