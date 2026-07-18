@@ -139,6 +139,61 @@ public class TestPanelModel {
                 .filter(c -> c instanceof AbstractHttpRequest<?>)
                 .map(ModelItem::getId).findFirst().orElse(null);
         model.addAttribute("childRequestId", childRequestId);
+
+        // Assertions (FA-32): generisch über die Engine-Registry
+        boolean assertable = step instanceof com.eviware.soapui.model.testsuite.Assertable;
+        model.addAttribute("isAssertable", assertable);
+        if (assertable) {
+            com.eviware.soapui.model.testsuite.Assertable target =
+                    (com.eviware.soapui.model.testsuite.Assertable) step;
+            model.addAttribute("assertionTypes", List.of(
+                    com.eviware.soapui.impl.wsdl.teststeps.assertions.TestAssertionRegistry
+                            .getInstance().getAvailableAssertionNames(target)));
+            model.addAttribute("assertions", target.getAssertionList().stream()
+                    .map(TestPanelModel::assertionRow).toList());
+        }
+    }
+
+    public record AssertionRow(String id, String name, String label, String kind,
+                               String token, boolean ignoreCase, String path,
+                               String expectedContent, String script, String sla,
+                               String codes, String configXml) {
+    }
+
+    private static AssertionRow assertionRow(com.eviware.soapui.model.testsuite.TestAssertion assertion) {
+        String id = assertion.getId();
+        String name = assertion.getName();
+        String label = assertion.getLabel();
+        if (assertion instanceof com.eviware.soapui.impl.wsdl.teststeps.assertions.basic.SimpleContainsAssertion contains) {
+            return new AssertionRow(id, name, label, "contains", contains.getToken(),
+                    contains.isIgnoreCase(), null, null, null, null, null, null);
+        }
+        if (assertion instanceof com.eviware.soapui.impl.wsdl.teststeps.assertions.basic.AbstractXmlContainsAssertion xpath) {
+            return new AssertionRow(id, name, label, "xpath", null, false, xpath.getPath(),
+                    xpath.getExpectedContent(), null, null, null, null);
+        }
+        if (assertion instanceof com.eviware.soapui.impl.wsdl.teststeps.assertions.basic.GroovyScriptAssertion groovy) {
+            return new AssertionRow(id, name, label, "script", null, false, null, null,
+                    groovy.getScriptText(), null, null, null);
+        }
+        if (assertion instanceof com.eviware.soapui.impl.wsdl.teststeps.assertions.basic.ResponseSLAAssertion sla) {
+            return new AssertionRow(id, name, label, "sla", null, false, null, null, null,
+                    sla.getSLA(), null, null);
+        }
+        if (assertion instanceof com.eviware.soapui.security.assertion.ValidHttpStatusCodesAssertion codes) {
+            return new AssertionRow(id, name, label, "codes", null, false, null, null, null,
+                    null, codes.getCodes(), null);
+        }
+        var wsdlAssertion = (com.eviware.soapui.impl.wsdl.teststeps.WsdlMessageAssertion) assertion;
+        if (!wsdlAssertion.isConfigurable()) {
+            return new AssertionRow(id, name, label, "none", null, false, null, null, null,
+                    null, null, null);
+        }
+        String configXml = wsdlAssertion.getConfiguration() == null
+                ? "" : wsdlAssertion.getConfiguration().xmlText(
+                        new org.apache.xmlbeans.XmlOptions().setSavePrettyPrint());
+        return new AssertionRow(id, name, label, "raw", null, false, null, null, null,
+                null, null, configXml);
     }
 
     private void common(String projectId, String error, String message, String user, Model model) {
