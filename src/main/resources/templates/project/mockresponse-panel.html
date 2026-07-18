@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="panel">
+    <p class="breadcrumb">
+        <a th:attr="hx-get=@{/projects/{p}/items/{i}(p=${projectId},i=${serviceId})}"
+           hx-target="#detail" hx-swap="innerHTML" href="javascript:void(0)">MockService</a> ›
+        <a th:attr="hx-get=@{/projects/{p}/items/{i}(p=${projectId},i=${opId})}"
+           hx-target="#detail" hx-swap="innerHTML" href="javascript:void(0)"
+           th:text="${opName}">Operation</a> ›
+        <strong th:text="${responseName}">Response</strong>
+    </p>
+    <h2 th:text="${responseName}">MockResponse</h2>
+
+    <div class="alert alert-error" th:if="${panelError}" th:text="${panelError}">Fehler</div>
+    <div class="alert alert-success" th:if="${panelMessage}" th:text="${panelMessage}">OK</div>
+    <div class="alert alert-highlight" th:if="${running and panelMessage}">
+        Der Mock läuft — Änderungen wirken sicher erst nach einem Neustart.
+        <form th:action="@{/projects/{p}/mocks/{m}/restart(p=${projectId},m=${serviceId})}"
+              method="post" class="inline"
+              th:attr="hx-post=@{/projects/{p}/mocks/{m}/restart(p=${projectId},m=${serviceId},panel=true)}"
+              hx-target="#detail" hx-swap="innerHTML">
+            <button class="btn btn-small" type="submit">Jetzt neu starten</button>
+        </form>
+    </div>
+
+    <form th:action="@{/projects/{p}/mockresponses/{r}(p=${projectId},r=${responseId})}" method="post"
+          th:attr="hx-post=@{/projects/{p}/mockresponses/{r}(p=${projectId},r=${responseId})}"
+          hx-target="#detail" hx-swap="innerHTML">
+        <label>Response-Content</label>
+        <textarea name="content" class="code-editor" data-mode="xml" rows="16"
+                  th:text="${content}" th:readonly="${!canEdit}"></textarea>
+        <button class="btn btn-primary" type="submit" th:disabled="${!canEdit}">Speichern</button>
+    </form>
+    <p class="muted" th:unless="${canEdit}">Zum Bearbeiten die Projekt-Sperre übernehmen.</p>
+</div>
+
+</body>
+</html>

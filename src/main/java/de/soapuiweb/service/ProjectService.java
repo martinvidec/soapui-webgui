@@ -34,15 +34,73 @@ public class ProjectService implements SmartLifecycle {
     public void start() {
         for (String projectId : store.listProjectIds()) {
             try {
-                WsdlProject project = new WsdlProject(store.projectFile(projectId).toString());
-                handles.put(projectId, new ProjectHandle(projectId, project, store.readMeta(projectId)));
+                loadHandle(projectId);
             } catch (Exception e) {
+                // Absturz während save(): Backup der letzten guten Version wiederherstellen
+                java.nio.file.Path backup = backupFile(projectId);
+                if (java.nio.file.Files.exists(backup)) {
+                    try {
+                        java.nio.file.Files.move(backup, store.projectFile(projectId),
+                                java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                        loadHandle(projectId);
+                        log.warn("Projekt {} aus Backup wiederhergestellt (unterbrochener Speichervorgang)",
+                                projectId);
+                        continue;
+                    } catch (Exception restoreFailure) {
+                        log.error("Projekt {} auch aus Backup nicht ladbar: {}",
+                                projectId, restoreFailure.getMessage());
+                        continue;
+                    }
+                }
                 log.error("Projekt {} konnte nicht geladen werden und wird übersprungen: {}",
                         projectId, e.getMessage());
             }
         }
         running = true;
         log.info("{} Projekt(e) geladen", handles.size());
+    }
+
+    private void loadHandle(String projectId) throws Exception {
+        WsdlProject project = new WsdlProject(store.projectFile(projectId).toString());
+        handles.put(projectId, new ProjectHandle(projectId, project, store.readMeta(projectId)));
+    }
+
+    private java.nio.file.Path backupFile(String projectId) {
+        return store.projectFile(projectId).resolveSibling("project.xml.bak");
+    }
+
+    /**
+     * Persistiert den In-Memory-Zustand in die Projektdatei (NFA-05):
+     * Backup der letzten guten Version, direktes Schreiben via Engine
+     * ({@code saveIn} hält den internen Pfad konsistent), Backup-Cleanup.
+     * Bei Absturz mitten im Schreiben stellt {@link #start()} das Backup wieder her.
+     */
+    public void save(String projectId) {
+        ProjectHandle handle = require(projectId);
+        handle.lock().writeLock().lock();
+        try {
+            java.nio.file.Path target = store.projectFile(projectId);
+            java.nio.file.Path backup = backupFile(projectId);
+            java.nio.file.Files.copy(target, backup,
+                    java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            try {
+                handle.project().saveIn(target.toFile());
+                java.nio.file.Files.deleteIfExists(backup);
+            } catch (Exception saveFailure) {
+                java.nio.file.Files.move(backup, target,
+                        java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                throw new IllegalStateException(
+                        "Projekt konnte nicht gespeichert werden: " + saveFailure.getMessage(),
+                        saveFailure);
+            }
+            ProjectMeta touched = handle.meta().touched(Instant.now().toEpochMilli());
+            store.writeMeta(projectId, touched);
+            handle.updateMeta(touched);
+        } catch (java.io.IOException e) {
+            throw new IllegalStateException("Projekt-Backup fehlgeschlagen: " + e.getMessage(), e);
+        } finally {
+            handle.lock().writeLock().unlock();
+        }
     }
 
     @Override

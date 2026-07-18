@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="panel">
+    <p class="breadcrumb">
+        <a th:attr="hx-get=@{/projects/{p}/items/{i}(p=${projectId},i=${serviceId})}"
+           hx-target="#detail" hx-swap="innerHTML" href="javascript:void(0)"
+           th:text="${serviceName}">MockService</a> ›
+        <strong th:text="${opName}">Operation</strong>
+    </p>
+    <h2 th:text="${opName}">MockOperation</h2>
+
+    <div class="alert alert-error" th:if="${panelError}" th:text="${panelError}">Fehler</div>
+    <div class="alert alert-success" th:if="${panelMessage}" th:text="${panelMessage}">OK</div>
+    <div class="alert alert-highlight" th:if="${running and panelMessage}">
+        Der Mock läuft — Änderungen wirken sicher erst nach einem Neustart.
+        <form th:action="@{/projects/{p}/mocks/{m}/restart(p=${projectId},m=${serviceId})}"
+              method="post" class="inline"
+              th:attr="hx-post=@{/projects/{p}/mocks/{m}/restart(p=${projectId},m=${serviceId},panel=true)}"
+              hx-target="#detail" hx-swap="innerHTML">
+            <button class="btn btn-small" type="submit">Jetzt neu starten</button>
+        </form>
+    </div>
+
+    <h3>MockResponses</h3>
+    <table class="table" th:unless="${#lists.isEmpty(responses)}">
+        <tbody>
+        <tr th:each="r : ${responses}">
+            <td><a th:attr="hx-get=@{/projects/{p}/items/{i}(p=${projectId},i=${r.id})}"
+                   hx-target="#detail" hx-swap="innerHTML"
+                   href="javascript:void(0)" th:text="${r.name}">Response</a></td>
+            <td class="right">
+                <form th:if="${canEdit}"
+                      th:action="@{/projects/{p}/mockresponses/{r}/delete(p=${projectId},r=${r.id})}"
+                      method="post" class="inline"
+                      th:attr="hx-post=@{/projects/{p}/mockresponses/{r}/delete(p=${projectId},r=${r.id})}"
+                      hx-target="#detail" hx-swap="innerHTML"
+                      hx-confirm="MockResponse wirklich löschen?">
+                    <button class="btn btn-small btn-danger" type="submit">Löschen</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <p class="muted" th:if="${#lists.isEmpty(responses)}">Keine MockResponses.</p>
+
+    <form th:if="${canEdit}" class="form-row"
+          th:action="@{/projects/{p}/mockops/{o}/responses(p=${projectId},o=${opId})}" method="post"
+          th:attr="hx-post=@{/projects/{p}/mockops/{o}/responses(p=${projectId},o=${opId})}"
+          hx-target="#detail" hx-swap="innerHTML">
+        <div>
+            <label>Name der neuen Response</label>
+            <input type="text" name="name" required>
+        </div>
+        <div class="form-row-submit">
+            <button class="btn btn-primary" type="submit">Response anlegen</button>
+        </div>
+    </form>
+
+    <h3>Dispatch</h3>
+    <form th:action="@{/projects/{p}/mockops/{o}/dispatch(p=${projectId},o=${opId})}" method="post"
+          th:attr="hx-post=@{/projects/{p}/mockops/{o}/dispatch(p=${projectId},o=${opId})}"
+          hx-target="#detail" hx-swap="innerHTML">
+        <div class="form-row">
+            <div>
+                <label>Verfahren</label>
+                <select name="dispatchStyle" th:disabled="${!canEdit}">
+                    <option th:each="s : ${ {'SEQUENCE','RANDOM','XPATH','SCRIPT'} }"
+                            th:value="${s}" th:text="${s}"
+                            th:selected="${s == dispatchStyle}">SEQUENCE</option>
+                </select>
+            </div>
+            <div>
+                <label>Default-Response</label>
+                <select name="defaultResponse" th:disabled="${!canEdit}">
+                    <option value="">— keine —</option>
+                    <option th:each="r : ${responses}" th:value="${r.name}" th:text="${r.name}"
+                            th:selected="${r.name == defaultResponse}">R</option>
+                </select>
+            </div>
+        </div>
+        <label>XPath-Ausdruck (XPATH) bzw. Groovy-Skript (SCRIPT) — Ergebnis wird gegen Response-Namen gematcht</label>
+        <textarea name="dispatchScript" class="code-editor" data-mode="groovy" rows="4"
+                  th:text="${dispatchScript}" th:readonly="${!canEdit}"></textarea>
+        <button class="btn btn-primary" type="submit" th:disabled="${!canEdit}">Dispatch speichern</button>
+    </form>
+    <p class="muted" th:unless="${canEdit}">Zum Bearbeiten die Projekt-Sperre übernehmen.</p>
+</div>
+
+</body>
+</html>

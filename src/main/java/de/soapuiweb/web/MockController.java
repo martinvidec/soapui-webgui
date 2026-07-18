@@ -65,6 +65,7 @@ public class MockController {
     @PostMapping("/projects/{id}/mocks/{mockId}/start")
     public String start(@PathVariable String id, @PathVariable String mockId,
                         @RequestParam(required = false) String panel,
+                        org.springframework.security.core.Authentication auth,
                         Model model, RedirectAttributes redirect) {
         String error = null;
         try {
@@ -72,24 +73,42 @@ public class MockController {
         } catch (RuntimeException e) {
             error = e.getMessage();
         }
-        return respond(id, mockId, panel, error, model, redirect);
+        return respond(id, mockId, panel, error, auth.getName(), model, redirect);
     }
 
     @PostMapping("/projects/{id}/mocks/{mockId}/stop")
     public String stop(@PathVariable String id, @PathVariable String mockId,
                        @RequestParam(required = false) String panel,
+                       org.springframework.security.core.Authentication auth,
                        Model model, RedirectAttributes redirect) {
         mockManager.stopMock(mockId);
-        return respond(id, mockId, panel, null, model, redirect);
+        return respond(id, mockId, panel, null, auth.getName(), model, redirect);
+    }
+
+    /** Ein-Klick-Neustart, damit Editier-Änderungen sicher wirken (FA-13). */
+    @PostMapping("/projects/{id}/mocks/{mockId}/restart")
+    public String restart(@PathVariable String id, @PathVariable String mockId,
+                          @RequestParam(required = false) String panel,
+                          org.springframework.security.core.Authentication auth,
+                          Model model, RedirectAttributes redirect) {
+        String error = null;
+        try {
+            mockManager.stopMock(mockId);
+            mockManager.startMock(id, mockId);
+        } catch (RuntimeException e) {
+            error = e.getMessage();
+        }
+        return respond(id, mockId, panel, error, auth.getName(), model, redirect);
     }
 
     @PostMapping("/projects/{id}/mocks/{mockId}/autostart")
     public String autostart(@PathVariable String id, @PathVariable String mockId,
                             @RequestParam boolean enabled,
                             @RequestParam(required = false) String panel,
+                            org.springframework.security.core.Authentication auth,
                             Model model, RedirectAttributes redirect) {
         projectService.setAutostart(id, mockId, enabled);
-        return respond(id, mockId, panel, null, model, redirect);
+        return respond(id, mockId, panel, null, auth.getName(), model, redirect);
     }
 
     /** SSE-Request-Log (FA-12); Last-Event-ID sorgt für verlustfreien Reconnect. */
@@ -101,9 +120,9 @@ public class MockController {
     }
 
     private String respond(String projectId, String mockId, String panel, String error,
-                           Model model, RedirectAttributes redirect) {
+                           String user, Model model, RedirectAttributes redirect) {
         if (panel != null) {
-            mockPanelModel.fill(projectId, mockId, error, model);
+            mockPanelModel.fill(projectId, mockId, error, null, user, model);
             return "project/mock-panel :: panel";
         }
         if (error != null) {
