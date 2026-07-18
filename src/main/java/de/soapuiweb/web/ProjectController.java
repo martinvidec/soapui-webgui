@@ -28,9 +28,12 @@ public class ProjectController {
             DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm").withZone(ZoneId.systemDefault());
 
     private final ProjectService projectService;
+    private final de.soapuiweb.service.LockService lockService;
 
-    public ProjectController(ProjectService projectService) {
+    public ProjectController(ProjectService projectService,
+                             de.soapuiweb.service.LockService lockService) {
         this.projectService = projectService;
+        this.lockService = lockService;
     }
 
     public record ProjectRow(String id, String name, String size, String uploadedBy,
@@ -69,9 +72,18 @@ public class ProjectController {
     }
 
     @PostMapping("/projects/{id}/delete")
-    public String delete(@PathVariable String id, RedirectAttributes redirect) {
+    public String delete(@PathVariable String id, org.springframework.security.core.Authentication auth,
+                         RedirectAttributes redirect) {
         ProjectHandle handle = projectService.require(id);
+        try {
+            lockService.ensureNotLockedByOther(id, auth.getName());
+        } catch (de.soapuiweb.service.LockService.LockConflictException e) {
+            redirect.addFlashAttribute("error",
+                    "Löschen nicht möglich: " + e.getMessage());
+            return "redirect:/";
+        }
         projectService.delete(id);
+        lockService.releaseAllOf(id);
         redirect.addFlashAttribute("message", "Projekt '" + handle.meta().name() + "' gelöscht");
         return "redirect:/";
     }
@@ -84,7 +96,7 @@ public class ProjectController {
                 handle.meta().uploadedBy(),
                 DATE_FORMAT.format(Instant.ofEpochMilli(handle.meta().uploadedAtEpochMs())),
                 DATE_FORMAT.format(Instant.ofEpochMilli(handle.meta().lastModifiedAtEpochMs())),
-                null,   // Sperre folgt mit Issue #4
+                lockService.ownerOf(handle.id()).orElse(null),
                 0);     // laufende Mocks folgen mit Issue #5
     }
 
