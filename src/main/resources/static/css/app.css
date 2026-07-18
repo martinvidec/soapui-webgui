@@ -270,6 +270,10 @@ input:focus, select:focus {
 .response-panel h3 { display: flex; align-items: center; gap: .5rem; font-size: 1rem; }
 .transfer-card { padding: .75rem 1rem; margin: .5rem 0; }
 .assertion-error { color: var(--danger); font-size: .85rem; padding: .1rem 0; }
+.script-block { margin: .5rem 0; border: 1px solid var(--border); border-radius: 6px; padding: .5rem .75rem; }
+.script-block summary { cursor: pointer; font-weight: 500; }
+.script-block form { margin-top: .5rem; }
+.log-groovy { background: #f4f9f6; }
 .response-body {
     background: #f8fafb;
     border: 1px solid var(--border);

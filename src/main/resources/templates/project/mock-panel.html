@@ -111,6 +111,12 @@
         <p class="muted" th:unless="${canEdit}">Zum Bearbeiten die Projekt-Sperre übernehmen.</p>
     </div>
 
+    <h3>Skripte</h3>
+    <div th:replace="~{fragments/script :: editor(${projectId}, ${mockId}, 'start', 'Start Script', ${startScript}, ${canEdit})}"></div>
+    <div th:replace="~{fragments/script :: editor(${projectId}, ${mockId}, 'stop', 'Stop Script', ${stopScript}, ${canEdit})}"></div>
+    <div th:replace="~{fragments/script :: editor(${projectId}, ${mockId}, 'onRequest', 'OnRequest Script', ${onRequestScript}, ${canEdit})}"></div>
+    <div th:replace="~{fragments/script :: editor(${projectId}, ${mockId}, 'afterRequest', 'AfterRequest Script', ${afterRequestScript}, ${canEdit})}"></div>
+
     <div class="mock-log">
         <h3>Request-Log <span class="muted">(letzte 500, live)</span></h3>
         <div hx-ext="sse"

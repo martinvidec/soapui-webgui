@@ -111,6 +111,8 @@ public class TestRunManager {
     private final ProjectService projectService;
     private final EventStreamService events;
     private final Map<String, ActiveRun> runs = new ConcurrentHashMap<>();
+    /** Runner-Thread → runId: Zuordnung für die Groovy-Log-Bridge (FA-41). */
+    private final Map<Thread, String> runThreads = new ConcurrentHashMap<>();
     private final Deque<String> runOrder = new ArrayDeque<>();
     private final ExecutorService stepRunExecutor = Executors.newCachedThreadPool(runnable -> {
         Thread thread = new Thread(runnable, "step-run");
@@ -172,6 +174,7 @@ public class TestRunManager {
         ActiveRun run = register(new ActiveRun(projectId, step.getName(), "TestStep"));
         event(run, "Lauf gestartet: TestStep '" + step.getName() + "'");
         stepRunExecutor.submit(() -> {
+            runThreads.put(Thread.currentThread(), run.runId());
             try {
                 MockTestRunner runner = new MockTestRunner(step.getTestCase());
                 run.runner.set(runner);
@@ -184,9 +187,26 @@ public class TestRunManager {
                 }, null, result == null ? 0 : result.getTimeTaken());
             } catch (Exception e) {
                 finish(run, "FAILED", e.getMessage(), 0);
+            } finally {
+                runThreads.remove(Thread.currentThread());
             }
         });
         return run;
+    }
+
+    /**
+     * runId des Laufs im aktuellen Thread (Groovy-Log-Bridge). Fallback: Die
+     * Engine führt Setup-Skripte VOR den beforeRun-Listenern aus (Thread noch
+     * nicht registriert) — läuft genau ein Lauf, wird ihm zugeordnet; bei
+     * mehreren wird verworfen statt falsch zugeordnet.
+     */
+    public String runIdForCurrentThread() {
+        String runId = runThreads.get(Thread.currentThread());
+        if (runId != null) {
+            return runId;
+        }
+        List<ActiveRun> active = runs.values().stream().filter(ActiveRun::isRunning).toList();
+        return active.size() == 1 ? active.get(0).runId() : null;
     }
 
     public void cancel(String runId) {
@@ -215,6 +235,12 @@ public class TestRunManager {
     private TestRunListenerAdapter caseListener(ActiveRun run, boolean finishOnAfterRun) {
         return new TestRunListenerAdapter() {
             @Override
+            public void beforeRun(TestCaseRunner runner, TestCaseRunContext context) {
+                // läuft im Runner-Thread — Zuordnung für die Groovy-Log-Bridge
+                runThreads.put(Thread.currentThread(), run.runId());
+            }
+
+            @Override
             public void beforeStep(TestCaseRunner runner, TestCaseRunContext context,
                                    TestStep step) {
                 event(run, "▶ " + step.getName());
@@ -228,6 +254,7 @@ public class TestRunManager {
 
             @Override
             public void afterRun(TestCaseRunner runner, TestCaseRunContext context) {
+                runThreads.remove(Thread.currentThread());
                 if (finishOnAfterRun) {
                     finish(run, runner.getStatus().name(), runner.getReason(),
                             runner.getTimeTaken());

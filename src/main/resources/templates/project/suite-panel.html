@@ -96,6 +96,11 @@
     </form>
 
     <div th:replace="~{fragments/properties :: props(${projectId}, ${holderId}, ${props}, ${canEdit})}"></div>
+
+    <h3>Skripte</h3>
+    <div th:replace="~{fragments/script :: editor(${projectId}, ${holderId}, 'setup', 'Setup Script', ${setupScript}, ${canEdit})}"></div>
+    <div th:replace="~{fragments/script :: editor(${projectId}, ${holderId}, 'teardown', 'TearDown Script', ${tearDownScript}, ${canEdit})}"></div>
+
     <p class="muted" th:unless="${canEdit}">Zum Bearbeiten die Projekt-Sperre übernehmen.</p>
 </div>
 
