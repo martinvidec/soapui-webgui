@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: soapui-webgui
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+server:
+  port: 8080
+
+app:
+  data-dir: data
+  mock:
+    port-min: 18000
+    port-max: 18999
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      access: read_only
