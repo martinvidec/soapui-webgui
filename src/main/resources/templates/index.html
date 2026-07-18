@@ -5,9 +5,68 @@
 <header th:replace="~{fragments/layout :: header}"></header>
 <main class="page">
     <div th:replace="~{fragments/layout :: flash}"></div>
+
     <div class="card">
         <h1>Projekte</h1>
-        <p class="muted">Die Projektverwaltung (Upload, Download, Liste) folgt mit Issue #3.</p>
+
+        <p class="muted" th:if="${#lists.isEmpty(projects)}">
+            Noch keine Projekte — lade unten eine SoapUI-Projektdatei hoch.
+        </p>
+
+        <table class="table" th:unless="${#lists.isEmpty(projects)}">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Größe</th>
+                <th>Hochgeladen</th>
+                <th>Geändert</th>
+                <th>Sperre</th>
+                <th>Mocks</th>
+                <th class="right">Aktionen</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="p : ${projects}">
+                <td><strong th:text="${p.name}">Projekt</strong></td>
+                <td th:text="${p.size}">1 KB</td>
+                <td>
+                    <span th:text="${p.uploadedAt}">Datum</span>
+                    <span class="muted" th:text="'von ' + ${p.uploadedBy}">von wem</span>
+                </td>
+                <td th:text="${p.lastModifiedAt}">Datum</td>
+                <td>
+                    <span th:if="${p.lockedBy}" class="badge badge-warn" th:text="${p.lockedBy}">user</span>
+                    <span th:unless="${p.lockedBy}" class="muted">—</span>
+                </td>
+                <td>
+                    <span th:if="${p.runningMocks > 0}" class="badge badge-ok"
+                          th:text="${p.runningMocks} + ' laufend'">0</span>
+                    <span th:unless="${p.runningMocks > 0}" class="muted">—</span>
+                </td>
+                <td class="right actions">
+                    <a class="btn btn-small" th:href="@{/projects/{id}/download(id=${p.id})}">Download</a>
+                    <form th:action="@{/projects/{id}/delete(id=${p.id})}" method="post" class="inline"
+                          th:attr="onsubmit=|return confirm('Projekt \'' + ${p.name} + '\' wirklich löschen? Laufende Mocks werden gestoppt.')|">
+                        <button class="btn btn-small btn-danger" type="submit">Löschen</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card">
+        <h2>Projekt hochladen</h2>
+        <form th:action="@{/projects}" method="post" enctype="multipart/form-data" class="form-row">
+            <div>
+                <label for="file">SoapUI-Projektdatei (XML)</label>
+                <input type="file" id="file" name="file" accept=".xml,text/xml" required>
+            </div>
+            <div class="form-row-submit">
+                <button class="btn btn-primary" type="submit">Hochladen</button>
+            </div>
+        </form>
+        <p class="muted">Die Datei wird beim Upload mit der SoapUI-Engine validiert und unverändert abgelegt (Download = Originaldatei).</p>
     </div>
 </main>
 </body>
