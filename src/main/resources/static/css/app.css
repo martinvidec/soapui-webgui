@@ -247,3 +247,16 @@ input:focus, select:focus {
     font-size: .8rem;
     max-height: 200px;
 }
+
+/* Editor & Breadcrumb */
+.breadcrumb { color: var(--text-muted); font-size: .85rem; margin: 0 0 .25rem; }
+.breadcrumb a { color: var(--text-muted); }
+.CodeMirror {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    height: auto;
+    min-height: 80px;
+    font-size: .85rem;
+    margin-bottom: .75rem;
+}
+.mock-ops h3 { margin: 1.25rem 0 .5rem; font-size: 1rem; }

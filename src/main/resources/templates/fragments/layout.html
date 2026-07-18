@@ -6,8 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title th:text="${title} + ' · SoapUI WebGUI'">SoapUI WebGUI</title>
     <link rel="stylesheet" th:href="@{/css/app.css}">
+    <link rel="stylesheet" th:href="@{/js/codemirror/codemirror.css}">
     <script th:src="@{/js/htmx.min.js}" defer></script>
     <script th:src="@{/js/htmx-sse.js}" defer></script>
+    <script th:src="@{/js/codemirror/codemirror.js}" defer></script>
+    <script th:src="@{/js/codemirror/mode/xml.js}" defer></script>
+    <script th:src="@{/js/codemirror/mode/javascript.js}" defer></script>
+    <script th:src="@{/js/codemirror/mode/groovy.js}" defer></script>
+    <script th:src="@{/js/app.js}" defer></script>
 </head>
 <body>
 

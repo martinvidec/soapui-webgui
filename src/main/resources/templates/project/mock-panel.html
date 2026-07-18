@@ -24,6 +24,8 @@
         </tr>
     </table>
 
+    <div class="alert alert-success" th:if="${panelMessage}" th:text="${panelMessage}">OK</div>
+
     <div class="panel-actions">
         <form th:unless="${running}" th:action="@{/projects/{p}/mocks/{m}/start(p=${projectId},m=${mockId})}"
               method="post" class="inline"
@@ -37,6 +39,12 @@
               hx-target="#detail" hx-swap="innerHTML">
             <button class="btn" type="submit">Mock stoppen</button>
         </form>
+        <form th:if="${running}" th:action="@{/projects/{p}/mocks/{m}/restart(p=${projectId},m=${mockId})}"
+              method="post" class="inline"
+              th:attr="hx-post=@{/projects/{p}/mocks/{m}/restart(p=${projectId},m=${mockId},panel=true)}"
+              hx-target="#detail" hx-swap="innerHTML">
+            <button class="btn" type="submit">Neu starten</button>
+        </form>
         <form th:action="@{/projects/{p}/mocks/{m}/autostart(p=${projectId},m=${mockId})}"
               method="post" class="inline"
               th:attr="hx-post=@{/projects/{p}/mocks/{m}/autostart(p=${projectId},m=${mockId},panel=true)}"
@@ -45,6 +53,62 @@
             <button class="btn" type="submit"
                     th:text="${autostart} ? 'Autostart deaktivieren' : 'Autostart aktivieren'">Autostart</button>
         </form>
+    </div>
+
+    <div class="mock-ops">
+        <h3>MockOperationen</h3>
+        <table class="table" th:unless="${#lists.isEmpty(operations)}">
+            <tbody>
+            <tr th:each="op : ${operations}">
+                <td><a th:attr="hx-get=@{/projects/{p}/items/{i}(p=${projectId},i=${op.id})}"
+                       hx-target="#detail" hx-swap="innerHTML"
+                       href="javascript:void(0)" th:text="${op.name}">Operation</a></td>
+                <td class="right">
+                    <form th:if="${canEdit}"
+                          th:action="@{/projects/{p}/mockops/{o}/delete(p=${projectId},o=${op.id})}"
+                          method="post" class="inline"
+                          th:attr="hx-post=@{/projects/{p}/mockops/{o}/delete(p=${projectId},o=${op.id})}"
+                          hx-target="#detail" hx-swap="innerHTML"
+                          hx-confirm="MockOperation wirklich löschen?">
+                        <button class="btn btn-small btn-danger" type="submit">Löschen</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <p class="muted" th:if="${#lists.isEmpty(operations)}">Keine MockOperationen.</p>
+
+        <form th:if="${canEdit}" class="form-row"
+              th:action="@{/projects/{p}/mocks/{m}/operations(p=${projectId},m=${mockId})}"
+              method="post"
+              th:attr="hx-post=@{/projects/{p}/mocks/{m}/operations(p=${projectId},m=${mockId})}"
+              hx-target="#detail" hx-swap="innerHTML">
+            <div th:unless="${isRest}">
+                <label>Interface-Operation</label>
+                <select name="operationId" required>
+                    <option th:each="op : ${soapOperations}" th:value="${op.id}"
+                            th:text="${op.name}">Op</option>
+                </select>
+            </div>
+            <div th:if="${isRest}" class="form-row" style="flex:2">
+                <div>
+                    <label>Methode</label>
+                    <select name="method">
+                        <option>GET</option><option>POST</option>
+                        <option>PUT</option><option>DELETE</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Pfad</label>
+                    <input type="text" name="actionPath" placeholder="/resource">
+                </div>
+            </div>
+            <div class="form-row-submit">
+                <button class="btn btn-primary" type="submit"
+                        th:text="${isRest} ? 'Action anlegen' : 'MockOperation anlegen'">Anlegen</button>
+            </div>
+        </form>
+        <p class="muted" th:unless="${canEdit}">Zum Bearbeiten die Projekt-Sperre übernehmen.</p>
     </div>
 
     <div class="mock-log">

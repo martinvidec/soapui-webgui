@@ -85,8 +85,16 @@ public class ProjectViewController {
         lockService.touch(id, auth.getName());
         ModelItem item = requireItem(handle, itemId);
         if (item instanceof com.eviware.soapui.impl.support.AbstractMockService<?, ?>) {
-            mockPanelModel.fill(id, itemId, null, model);
+            mockPanelModel.fill(id, itemId, null, null, auth.getName(), model);
             return "project/mock-panel :: panel";
+        }
+        if (item instanceof com.eviware.soapui.model.mock.MockOperation) {
+            mockPanelModel.fillOperation(id, itemId, null, null, auth.getName(), model);
+            return "project/mockop-panel :: panel";
+        }
+        if (item instanceof com.eviware.soapui.model.mock.MockResponse) {
+            mockPanelModel.fillResponse(id, itemId, null, null, auth.getName(), model);
+            return "project/mockresponse-panel :: panel";
         }
         model.addAttribute("name", item.getName());
         model.addAttribute("typeLabel", ModelItems.typeLabel(item));
