@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- Wiederverwendbarer Groovy-Skript-Editor (FA-40), eingeklappt als details -->
+<details th:fragment="editor(projectId, holderId, type, label, script, canEdit)" class="script-block">
+    <summary>
+        <span th:text="${label}">Skript</span>
+        <span class="badge badge-warn" th:if="${script != null and !#strings.isEmpty(script)}">vorhanden</span>
+    </summary>
+    <form th:action="@{/projects/{p}/scripts/{h}(p=${projectId},h=${holderId})}" method="post"
+          th:attr="hx-post=@{/projects/{p}/scripts/{h}(p=${projectId},h=${holderId})}"
+          hx-target="#detail" hx-swap="innerHTML">
+        <input type="hidden" name="scriptType" th:value="${type}">
+        <textarea name="script" class="code-editor" data-mode="groovy" rows="5"
+                  th:text="${script}" th:readonly="${!canEdit}"></textarea>
+        <button class="btn btn-primary btn-small" type="submit"
+                th:disabled="${!canEdit}">Skript speichern</button>
+    </form>
+</details>
+
+</body>
+</html>

@@ -60,6 +60,10 @@ public class MockPanelModel {
         model.addAttribute("canEdit", lockService.isHeldBy(projectId, user));
         model.addAttribute("panelError", error);
         model.addAttribute("panelMessage", message);
+        model.addAttribute("startScript", mockService.getStartScript());
+        model.addAttribute("stopScript", mockService.getStopScript());
+        model.addAttribute("onRequestScript", mockService.getOnRequestScript());
+        model.addAttribute("afterRequestScript", mockService.getAfterRequestScript());
     }
 
     public void fillOperation(String projectId, String opItemId, String error, String message,

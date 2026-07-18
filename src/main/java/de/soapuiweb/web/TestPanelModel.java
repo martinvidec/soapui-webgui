@@ -61,6 +61,8 @@ public class TestPanelModel {
                 .map(s -> new CaseRow(s.getId(), s.getName(), s.isDisabled())).toList());
         model.addAttribute("props", propertyRows(project));
         model.addAttribute("holderId", project.getId());
+        model.addAttribute("afterLoadScript", project.getAfterLoadScript());
+        model.addAttribute("beforeSaveScript", project.getBeforeSaveScript());
     }
 
     public void fillSuite(String projectId, String suiteId, String error, String message,
@@ -76,6 +78,8 @@ public class TestPanelModel {
                 .map(c -> new CaseRow(c.getId(), c.getName(), c.isDisabled())).toList());
         model.addAttribute("props", propertyRows(suite));
         model.addAttribute("holderId", suiteId);
+        model.addAttribute("setupScript", suite.getSetupScript());
+        model.addAttribute("tearDownScript", suite.getTearDownScript());
     }
 
     public void fillCase(String projectId, String caseId, String error, String message,
@@ -93,6 +97,8 @@ public class TestPanelModel {
         model.addAttribute("availableRequests", availableRequests(handle));
         model.addAttribute("props", propertyRows(testCase));
         model.addAttribute("holderId", caseId);
+        model.addAttribute("setupScript", testCase.getSetupScript());
+        model.addAttribute("tearDownScript", testCase.getTearDownScript());
     }
 
     public void fillStep(String projectId, String stepId, String error, String message,

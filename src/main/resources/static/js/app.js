@@ -22,4 +22,17 @@ document.addEventListener('DOMContentLoaded', function () {
     document.body.addEventListener('htmx:afterSwap', function (evt) {
         initCodeEditors(evt.target);
     });
+    // Editoren in <details> erst beim Aufklappen initialisieren/refreshen,
+    // sonst rendert CodeMirror mit Breite 0
+    document.addEventListener('toggle', function (evt) {
+        if (!(evt.target instanceof HTMLElement) || !evt.target.open) {
+            return;
+        }
+        initCodeEditors(evt.target);
+        evt.target.querySelectorAll('.CodeMirror').forEach(function (el) {
+            if (el.CodeMirror) {
+                el.CodeMirror.refresh();
+            }
+        });
+    }, true);
 });

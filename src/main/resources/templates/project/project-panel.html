@@ -56,6 +56,11 @@
     </form>
 
     <div th:replace="~{fragments/properties :: props(${projectId}, ${holderId}, ${props}, ${canEdit})}"></div>
+
+    <h3>Skripte</h3>
+    <div th:replace="~{fragments/script :: editor(${projectId}, ${holderId}, 'afterLoad', 'Load Script (nach Projekt-Laden)', ${afterLoadScript}, ${canEdit})}"></div>
+    <div th:replace="~{fragments/script :: editor(${projectId}, ${holderId}, 'beforeSave', 'Save Script (vor Projekt-Speichern)', ${beforeSaveScript}, ${canEdit})}"></div>
+
     <p class="muted" th:unless="${canEdit}">Zum Bearbeiten die Projekt-Sperre übernehmen.</p>
 </div>
 
