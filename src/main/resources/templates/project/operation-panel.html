@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="panel">
+    <p class="breadcrumb">
+        <a th:if="${parentId}" th:attr="hx-get=@{/projects/{p}/items/{i}(p=${projectId},i=${parentId})}"
+           hx-target="#detail" hx-swap="innerHTML" href="javascript:void(0)"
+           th:text="${parentName}">Interface</a> ›
+        <strong th:text="${opName}">Operation</strong>
+    </p>
+    <h2 th:text="${opName}">Operation</h2>
+    <p><span class="badge" th:text="${typeLabel}">Typ</span></p>
+
+    <div class="alert alert-error" th:if="${panelError}" th:text="${panelError}">Fehler</div>
+    <div class="alert alert-success" th:if="${panelMessage}" th:text="${panelMessage}">OK</div>
+
+    <h3>Requests</h3>
+    <table class="table" th:unless="${#lists.isEmpty(requests)}">
+        <tbody>
+        <tr th:each="r : ${requests}">
+            <td><a th:attr="hx-get=@{/projects/{p}/items/{i}(p=${projectId},i=${r.id})}"
+                   hx-target="#detail" hx-swap="innerHTML"
+                   href="javascript:void(0)" th:text="${r.name}">Request</a></td>
+        </tr>
+        </tbody>
+    </table>
+    <p class="muted" th:if="${#lists.isEmpty(requests)}">Keine Requests.</p>
+
+    <form th:if="${canEdit and (isWsdl or isRestMethod)}" class="form-row"
+          th:action="@{/projects/{p}/operations/{o}/requests(p=${projectId},o=${opId})}" method="post"
+          th:attr="hx-post=@{/projects/{p}/operations/{o}/requests(p=${projectId},o=${opId})}"
+          hx-target="#detail" hx-swap="innerHTML">
+        <div>
+            <label>Name des neuen Requests</label>
+            <input type="text" name="name" required>
+        </div>
+        <div th:if="${isWsdl}">
+            <label class="checkbox-label">
+                <input type="checkbox" name="withSample" value="true" checked>
+                Beispiel-Request aus Schema generieren
+            </label>
+        </div>
+        <div class="form-row-submit">
+            <button class="btn btn-primary" type="submit">Request anlegen</button>
+        </div>
+    </form>
+    <p class="muted" th:unless="${canEdit}">Zum Bearbeiten die Projekt-Sperre übernehmen.</p>
+</div>
+
+</body>
+</html>

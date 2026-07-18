@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="panel">
+    <h2 th:text="${ifaceName}">Interface</h2>
+    <p>
+        <span class="badge" th:text="${typeLabel}">Typ</span>
+        <span class="muted" th:text="${operationCount} + ' Operation(en)'">0</span>
+    </p>
+
+    <div class="alert alert-error" th:if="${panelError}" th:text="${panelError}">Fehler</div>
+    <div class="alert alert-success" th:if="${panelMessage}" th:text="${panelMessage}">OK</div>
+
+    <h3>Endpoints</h3>
+    <table class="table" th:unless="${#lists.isEmpty(endpoints)}">
+        <tbody>
+        <tr th:each="e : ${endpoints}">
+            <td><code th:text="${e}">http://…</code></td>
+            <td class="right">
+                <form th:if="${canEdit}"
+                      th:action="@{/projects/{p}/interfaces/{i}/endpoints/delete(p=${projectId},i=${ifaceId})}"
+                      method="post" class="inline"
+                      th:attr="hx-post=@{/projects/{p}/interfaces/{i}/endpoints/delete(p=${projectId},i=${ifaceId})}"
+                      hx-target="#detail" hx-swap="innerHTML">
+                    <input type="hidden" name="endpoint" th:value="${e}">
+                    <button class="btn btn-small btn-danger" type="submit">Entfernen</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <p class="muted" th:if="${#lists.isEmpty(endpoints)}">Keine Endpoints.</p>
+
+    <form th:if="${canEdit}" class="form-row"
+          th:action="@{/projects/{p}/interfaces/{i}/endpoints(p=${projectId},i=${ifaceId})}" method="post"
+          th:attr="hx-post=@{/projects/{p}/interfaces/{i}/endpoints(p=${projectId},i=${ifaceId})}"
+          hx-target="#detail" hx-swap="innerHTML">
+        <div style="flex: 2">
+            <label>Neuer Endpoint</label>
+            <input type="text" name="endpoint" placeholder="http://host:port/pfad" required>
+        </div>
+        <div class="form-row-submit">
+            <button class="btn btn-primary" type="submit">Hinzufügen</button>
+        </div>
+    </form>
+    <p class="muted" th:unless="${canEdit}">Zum Bearbeiten die Projekt-Sperre übernehmen.</p>
+</div>
+
+</body>
+</html>

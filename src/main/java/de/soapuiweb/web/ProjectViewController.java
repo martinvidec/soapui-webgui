@@ -33,12 +33,15 @@ public class ProjectViewController {
     private final ProjectService projectService;
     private final LockService lockService;
     private final MockPanelModel mockPanelModel;
+    private final RequestPanelModel requestPanelModel;
 
     public ProjectViewController(ProjectService projectService, LockService lockService,
-                                 MockPanelModel mockPanelModel) {
+                                 MockPanelModel mockPanelModel,
+                                 RequestPanelModel requestPanelModel) {
         this.projectService = projectService;
         this.lockService = lockService;
         this.mockPanelModel = mockPanelModel;
+        this.requestPanelModel = requestPanelModel;
     }
 
     public record TreeNode(String id, String name, String typeLabel, boolean hasChildren) {
@@ -95,6 +98,19 @@ public class ProjectViewController {
         if (item instanceof com.eviware.soapui.model.mock.MockResponse) {
             mockPanelModel.fillResponse(id, itemId, null, null, auth.getName(), model);
             return "project/mockresponse-panel :: panel";
+        }
+        if (item instanceof com.eviware.soapui.impl.support.AbstractHttpRequest<?>) {
+            requestPanelModel.fillRequest(id, itemId, null, null, auth.getName(), null, model);
+            return "project/request-panel :: panel";
+        }
+        if (item instanceof com.eviware.soapui.impl.wsdl.WsdlOperation
+                || item instanceof com.eviware.soapui.impl.rest.RestMethod) {
+            requestPanelModel.fillOperation(id, itemId, null, null, auth.getName(), model);
+            return "project/operation-panel :: panel";
+        }
+        if (item instanceof com.eviware.soapui.model.iface.Interface) {
+            requestPanelModel.fillInterface(id, itemId, null, null, auth.getName(), model);
+            return "project/interface-panel :: panel";
         }
         model.addAttribute("name", item.getName());
         model.addAttribute("typeLabel", ModelItems.typeLabel(item));

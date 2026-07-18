@@ -260,3 +260,20 @@ input:focus, select:focus {
     margin-bottom: .75rem;
 }
 .mock-ops h3 { margin: 1.25rem 0 .5rem; font-size: 1rem; }
+
+/* Request-Editor & Response */
+.form-inline { display: inline-flex; gap: .35rem; align-items: center; }
+.form-inline input { width: auto; }
+.checkbox-label { display: flex; align-items: center; gap: .4rem; font-weight: 400; }
+.checkbox-label input { width: auto; }
+.response-panel { margin-top: 1.25rem; border-top: 1px solid var(--border); padding-top: .75rem; }
+.response-panel h3 { display: flex; align-items: center; gap: .5rem; font-size: 1rem; }
+.response-body {
+    background: #f8fafb;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: .6rem;
+    overflow-x: auto;
+    font-size: .82rem;
+    max-height: 380px;
+}

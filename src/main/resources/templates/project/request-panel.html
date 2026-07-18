@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="panel">
+    <p class="breadcrumb">
+        <a th:attr="hx-get=@{/projects/{p}/items/{i}(p=${projectId},i=${opId})}"
+           hx-target="#detail" hx-swap="innerHTML" href="javascript:void(0)"
+           th:text="${opName}">Operation</a> ›
+        <strong th:text="${requestName}">Request</strong>
+    </p>
+    <h2 th:text="${requestName}">Request</h2>
+
+    <div class="alert alert-error" th:if="${panelError}" th:text="${panelError}">Fehler</div>
+    <div class="alert alert-success" th:if="${panelMessage}" th:text="${panelMessage}">OK</div>
+
+    <form th:action="@{/projects/{p}/requests/{r}(p=${projectId},r=${requestId})}" method="post"
+          th:attr="hx-post=@{/projects/{p}/requests/{r}(p=${projectId},r=${requestId})}"
+          hx-target="#detail" hx-swap="innerHTML" id="request-form">
+        <div class="form-row">
+            <div style="flex: 2">
+                <label>Endpoint</label>
+                <input type="text" name="endpoint" list="endpoint-list" th:value="${endpoint}"
+                       th:readonly="${!canEdit}">
+                <datalist id="endpoint-list">
+                    <option th:each="e : ${endpoints}" th:value="${e}"></option>
+                </datalist>
+            </div>
+        </div>
+        <label>Header <span class="muted">(eine Zeile pro Header, Format „Name: Wert")</span></label>
+        <textarea name="headers" rows="2" th:text="${headerLines}" th:readonly="${!canEdit}"></textarea>
+        <label>Request-Content</label>
+        <textarea name="content" class="code-editor" data-mode="xml" rows="12"
+                  th:text="${content}" th:readonly="${!canEdit}"></textarea>
+        <div class="panel-actions">
+            <button class="btn btn-primary" type="submit" th:disabled="${!canEdit}">Speichern</button>
+            <button class="btn" type="submit"
+                    th:attr="hx-post=@{/projects/{p}/requests/{r}/submit(p=${projectId},r=${requestId})}"
+                    hx-target="#detail" hx-swap="innerHTML">Senden</button>
+            <span class="muted">Senden nutzt den zuletzt gespeicherten Stand.</span>
+        </div>
+    </form>
+
+    <div class="panel-actions" th:if="${canEdit}">
+        <form th:action="@{/projects/{p}/requests/{r}/rename(p=${projectId},r=${requestId})}"
+              method="post" class="inline form-inline"
+              th:attr="hx-post=@{/projects/{p}/requests/{r}/rename(p=${projectId},r=${requestId})}"
+              hx-target="#detail" hx-swap="innerHTML">
+            <input type="text" name="name" th:value="${requestName}" required>
+            <button class="btn btn-small" type="submit">Umbenennen</button>
+        </form>
+        <form th:action="@{/projects/{p}/requests/{r}/clone(p=${projectId},r=${requestId})}"
+              method="post" class="inline form-inline"
+              th:attr="hx-post=@{/projects/{p}/requests/{r}/clone(p=${projectId},r=${requestId})}"
+              hx-target="#detail" hx-swap="innerHTML">
+            <input type="text" name="name" th:value="${requestName + ' Kopie'}" required>
+            <button class="btn btn-small" type="submit">Klonen</button>
+        </form>
+        <form th:action="@{/projects/{p}/requests/{r}/delete(p=${projectId},r=${requestId})}"
+              method="post" class="inline"
+              th:attr="hx-post=@{/projects/{p}/requests/{r}/delete(p=${projectId},r=${requestId})}"
+              hx-target="#detail" hx-swap="innerHTML" hx-confirm="Request wirklich löschen?">
+            <button class="btn btn-small btn-danger" type="submit">Löschen</button>
+        </form>
+    </div>
+
+    <div class="response-panel" th:if="${result != null and result.success}">
+        <h3>Response
+            <span class="badge" th:classappend="${result.status < 400} ? 'badge-ok' : 'badge-off'"
+                  th:text="'HTTP ' + ${result.status}">HTTP 200</span>
+            <span class="muted" th:text="${result.timeTakenMs} + ' ms · ' + ${result.sizeLabel}">4 ms</span>
+        </h3>
+        <details>
+            <summary th:text="${#lists.size(result.headers)} + ' Response-Header'">Header</summary>
+            <table class="table kv">
+                <tr th:each="h : ${result.headers}">
+                    <th th:text="${h.name}">Name</th>
+                    <td th:text="${h.value}">Wert</td>
+                </tr>
+            </table>
+        </details>
+        <pre class="response-body" th:text="${result.bodyPretty}">…</pre>
+        <details>
+            <summary>Raw</summary>
+            <pre class="response-body" th:text="${result.bodyRaw}">…</pre>
+        </details>
+    </div>
+</div>
+
+</body>
+</html>
