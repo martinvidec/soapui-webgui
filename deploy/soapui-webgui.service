@@ -1,0 +1,30 @@
+# Beispiel-systemd-Unit für die SoapUI WebGUI (Spezifikation, Abschnitt 5)
+# Installation: nach /etc/systemd/system/soapui-webgui.service kopieren,
+# dann: systemctl daemon-reload && systemctl enable --now soapui-webgui
+
+[Unit]
+Description=SoapUI WebGUI
+After=network.target
+
+[Service]
+Type=simple
+# Dedizierter Benutzer mit minimalen Rechten — Groovy-Skripte in Projekten
+# führen Code auf dem Server aus (NFA-02)
+User=soapui-web
+Group=soapui-web
+WorkingDirectory=/opt/soapui-webgui
+ExecStart=/usr/bin/java -Xmx1024m -jar /opt/soapui-webgui/soapui-webgui.jar \
+    --spring.config.additional-location=file:/etc/soapui-webgui/application.yml
+Restart=on-failure
+RestartSec=5
+SuccessExitStatus=143
+
+# Härtung: Dateisystem weitgehend read-only, nur das Datenverzeichnis beschreibbar
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/var/lib/soapui-webgui
+
+[Install]
+WantedBy=multi-user.target
