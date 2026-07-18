@@ -49,7 +49,7 @@ class MockOpsIT {
     private MockManager mockManager;
 
     @Autowired
-    private MockLogService mockLogService;
+    private EventStreamService eventStreamService;
 
     private static final HttpClient HTTP = HttpClient.newHttpClient();
 
@@ -124,11 +124,11 @@ class MockOpsIT {
 
         // Request-Log-Event landet im Ring-Puffer (FA-12, < 2 s)
         long deadline = System.currentTimeMillis() + 2000;
-        while (mockLogService.eventsAfter(fx.soapMockId(), 0).isEmpty()
+        while (eventStreamService.eventsAfter(fx.soapMockId(), 0).isEmpty()
                 && System.currentTimeMillis() < deadline) {
             Thread.sleep(50);
         }
-        assertThat(mockLogService.eventsAfter(fx.soapMockId(), 0))
+        assertThat(eventStreamService.eventsAfter(fx.soapMockId(), 0))
                 .as("Mock-Request muss binnen 2 s im Log-Puffer sein")
                 .isNotEmpty()
                 .anySatisfy(e -> assertThat(e.html()).contains("Echo"));

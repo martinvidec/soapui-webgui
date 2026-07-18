@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="panel">
+    <h2>Testlauf
+        <span class="muted" th:text="${run.kind} + ' · ' + ${run.targetName}">Ziel</span>
+    </h2>
+
+    <div th:replace="~{project/run-panel :: results(${run})}"></div>
+
+    <div class="mock-log">
+        <h3>Lauf-Log <span class="muted">(live)</span></h3>
+        <div hx-ext="sse"
+             th:attr="sse-connect=@{/runs/{r}/events(r=${run.runId})}"
+             sse-swap="mocklog" hx-swap="afterbegin" class="log-feed">
+        </div>
+    </div>
+</div>
+
+<!-- Ergebnis-Fragment: pollt sich selbst, solange der Lauf läuft (FA-34) -->
+<div th:fragment="results(run)"
+     th:attr="hx-get=${run.running} ? @{/runs/{r}/results(r=${run.runId})} : null,
+              hx-trigger=${run.running} ? 'every 1s' : null"
+     hx-swap="outerHTML">
+
+    <p>
+        <span class="badge" th:classappend="${run.status == 'FINISHED'} ? 'badge-ok'
+                : (${run.status == 'RUNNING'} ? 'badge-warn' : 'badge-off')"
+              th:text="${run.status}">Status</span>
+        <span class="muted" th:if="${!run.running}"
+              th:text="${run.timeTakenMs} + ' ms'">Zeit</span>
+        <span class="muted" th:if="${run.reason}" th:text="${run.reason}">Grund</span>
+    </p>
+
+    <form th:if="${run.running}" th:action="@{/runs/{r}/cancel(r=${run.runId})}" method="post"
+          class="inline" th:attr="hx-post=@{/runs/{r}/cancel(r=${run.runId})}"
+          hx-target="#detail" hx-swap="innerHTML">
+        <button class="btn btn-danger" type="submit">Lauf abbrechen</button>
+    </form>
+
+    <table class="table" th:unless="${#lists.isEmpty(run.results)}">
+        <thead>
+        <tr><th>TestStep</th><th>Status</th><th>Dauer</th><th>Details</th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="r : ${run.results}">
+            <td th:text="${r.stepName}">Step</td>
+            <td>
+                <span class="badge" th:classappend="${r.status == 'OK'} ? 'badge-ok' : 'badge-off'"
+                      th:text="${r.status}">OK</span>
+            </td>
+            <td th:text="${r.timeTakenMs} + ' ms'">0 ms</td>
+            <td>
+                <div th:each="m : ${r.messages}" class="assertion-error" th:text="${m}">Meldung</div>
+                <details th:if="${r.requestContent != null or r.responseContent != null}">
+                    <summary class="muted">Request/Response</summary>
+                    <pre class="response-body" th:if="${r.requestContent}"
+                         th:text="${r.requestContent}">req</pre>
+                    <pre class="response-body" th:if="${r.responseContent}"
+                         th:text="${r.responseContent}">resp</pre>
+                </details>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <p class="muted" th:if="${#lists.isEmpty(run.results)}">Noch keine Step-Ergebnisse …</p>
+</div>
+
+</body>
+</html>

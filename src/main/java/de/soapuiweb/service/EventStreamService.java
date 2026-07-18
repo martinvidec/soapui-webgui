@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * Event-ID (Last-Event-ID-Header) verpasste Events aus dem Puffer nach.
  */
 @Service
-public class MockLogService {
+public class EventStreamService {
 
     public record LogEvent(long id, String html) {
     }
@@ -27,41 +27,41 @@ public class MockLogService {
     static final int CAPACITY = 500;
     private static final String EVENT_NAME = "mocklog";
 
-    private static final Logger log = LogManager.getLogger(MockLogService.class);
+    private static final Logger log = LogManager.getLogger(EventStreamService.class);
 
     private final Map<String, Deque<LogEvent>> buffers = new ConcurrentHashMap<>();
     private final Map<String, AtomicLong> sequences = new ConcurrentHashMap<>();
     private final Map<String, List<SseEmitter>> subscribers = new ConcurrentHashMap<>();
 
-    public void append(String mockId, String html) {
-        long id = sequences.computeIfAbsent(mockId, k -> new AtomicLong()).incrementAndGet();
-        Deque<LogEvent> buffer = buffers.computeIfAbsent(mockId, k -> new ConcurrentLinkedDeque<>());
+    public void append(String streamKey, String html) {
+        long id = sequences.computeIfAbsent(streamKey, k -> new AtomicLong()).incrementAndGet();
+        Deque<LogEvent> buffer = buffers.computeIfAbsent(streamKey, k -> new ConcurrentLinkedDeque<>());
         buffer.addLast(new LogEvent(id, html));
         while (buffer.size() > CAPACITY) {
             buffer.pollFirst();
         }
-        for (SseEmitter emitter : subscribers.getOrDefault(mockId, List.of())) {
+        for (SseEmitter emitter : subscribers.getOrDefault(streamKey, List.of())) {
             try {
                 emitter.send(SseEmitter.event().id(Long.toString(id)).name(EVENT_NAME).data(html));
             } catch (Exception e) {
-                unsubscribe(mockId, emitter);
+                unsubscribe(streamKey, emitter);
             }
         }
     }
 
-    public List<LogEvent> eventsAfter(String mockId, long lastEventId) {
-        return buffers.getOrDefault(mockId, new ConcurrentLinkedDeque<>()).stream()
+    public List<LogEvent> eventsAfter(String streamKey, long lastEventId) {
+        return buffers.getOrDefault(streamKey, new ConcurrentLinkedDeque<>()).stream()
                 .filter(event -> event.id() > lastEventId)
                 .toList();
     }
 
     /** Öffnet einen SSE-Stream; gepufferte Events nach lastEventId werden sofort nachgespielt. */
-    public SseEmitter subscribe(String mockId, long lastEventId) {
+    public SseEmitter subscribe(String streamKey, long lastEventId) {
         SseEmitter emitter = new SseEmitter(0L);
-        emitter.onCompletion(() -> unsubscribe(mockId, emitter));
-        emitter.onTimeout(() -> unsubscribe(mockId, emitter));
-        emitter.onError(e -> unsubscribe(mockId, emitter));
-        for (LogEvent event : eventsAfter(mockId, lastEventId)) {
+        emitter.onCompletion(() -> unsubscribe(streamKey, emitter));
+        emitter.onTimeout(() -> unsubscribe(streamKey, emitter));
+        emitter.onError(e -> unsubscribe(streamKey, emitter));
+        for (LogEvent event : eventsAfter(streamKey, lastEventId)) {
             try {
                 emitter.send(SseEmitter.event()
                         .id(Long.toString(event.id())).name(EVENT_NAME).data(event.html()));
@@ -70,21 +70,21 @@ public class MockLogService {
                 return emitter;
             }
         }
-        subscribers.computeIfAbsent(mockId, k -> new CopyOnWriteArrayList<>()).add(emitter);
+        subscribers.computeIfAbsent(streamKey, k -> new CopyOnWriteArrayList<>()).add(emitter);
         return emitter;
     }
 
-    public void clear(String mockId) {
-        buffers.remove(mockId);
-        sequences.remove(mockId);
-        List<SseEmitter> emitters = subscribers.remove(mockId);
+    public void clear(String streamKey) {
+        buffers.remove(streamKey);
+        sequences.remove(streamKey);
+        List<SseEmitter> emitters = subscribers.remove(streamKey);
         if (emitters != null) {
             emitters.forEach(SseEmitter::complete);
         }
     }
 
-    private void unsubscribe(String mockId, SseEmitter emitter) {
-        List<SseEmitter> list = subscribers.get(mockId);
+    private void unsubscribe(String streamKey, SseEmitter emitter) {
+        List<SseEmitter> list = subscribers.get(streamKey);
         if (list != null) {
             list.remove(emitter);
         }

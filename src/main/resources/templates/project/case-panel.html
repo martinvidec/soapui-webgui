@@ -18,6 +18,14 @@
     <div class="alert alert-error" th:if="${panelError}" th:text="${panelError}">Fehler</div>
     <div class="alert alert-success" th:if="${panelMessage}" th:text="${panelMessage}">OK</div>
 
+    <div class="panel-actions">
+        <form th:action="@{/projects/{p}/testcases/{c}/run(p=${projectId},c=${caseId})}" method="post"
+              class="inline" th:attr="hx-post=@{/projects/{p}/testcases/{c}/run(p=${projectId},c=${caseId})}"
+              hx-target="#detail" hx-swap="innerHTML">
+            <button class="btn btn-primary" type="submit">▶ TestCase ausführen</button>
+        </form>
+    </div>
+
     <div class="panel-actions" th:if="${canEdit}">
         <form class="inline form-inline"
               th:action="@{/projects/{p}/testcases/{c}/rename(p=${projectId},c=${caseId})}" method="post"

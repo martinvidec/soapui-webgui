@@ -43,17 +43,17 @@ public class MockManager implements SmartLifecycle {
             DateTimeFormatter.ofPattern("HH:mm:ss").withZone(ZoneId.systemDefault());
 
     private final ProjectService projectService;
-    private final MockLogService mockLogService;
+    private final EventStreamService eventStreamService;
     private final AppProperties properties;
     private final Map<String, RunningMock> running = new ConcurrentHashMap<>();
     private final Set<String> listenerAttached = ConcurrentHashMap.newKeySet();
     private final List<String> autostartWarnings = new CopyOnWriteArrayList<>();
     private volatile boolean lifecycleRunning;
 
-    public MockManager(ProjectService projectService, MockLogService mockLogService,
+    public MockManager(ProjectService projectService, EventStreamService eventStreamService,
                        AppProperties properties) {
         this.projectService = projectService;
-        this.mockLogService = mockLogService;
+        this.eventStreamService = eventStreamService;
         this.properties = properties;
     }
 
@@ -209,7 +209,7 @@ public class MockManager implements SmartLifecycle {
         mock.addMockRunListener(new MockRunListenerAdapter() {
             @Override
             public void onMockResult(MockResult result) {
-                mockLogService.append(mockItemId, renderLogEntry(result));
+                eventStreamService.append(mockItemId, renderLogEntry(result));
             }
         });
     }

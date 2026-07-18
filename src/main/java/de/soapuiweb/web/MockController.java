@@ -2,7 +2,7 @@ package de.soapuiweb.web;
 
 import com.eviware.soapui.impl.support.AbstractMockService;
 import de.soapuiweb.engine.ModelItems;
-import de.soapuiweb.service.MockLogService;
+import de.soapuiweb.service.EventStreamService;
 import de.soapuiweb.service.MockManager;
 import de.soapuiweb.service.ProjectHandle;
 import de.soapuiweb.service.ProjectService;
@@ -29,14 +29,14 @@ public class MockController {
 
     private final ProjectService projectService;
     private final MockManager mockManager;
-    private final MockLogService mockLogService;
+    private final EventStreamService eventStreamService;
     private final MockPanelModel mockPanelModel;
 
     public MockController(ProjectService projectService, MockManager mockManager,
-                          MockLogService mockLogService, MockPanelModel mockPanelModel) {
+                          EventStreamService eventStreamService, MockPanelModel mockPanelModel) {
         this.projectService = projectService;
         this.mockManager = mockManager;
-        this.mockLogService = mockLogService;
+        this.eventStreamService = eventStreamService;
         this.mockPanelModel = mockPanelModel;
     }
 
@@ -116,7 +116,7 @@ public class MockController {
     public SseEmitter log(@PathVariable String id, @PathVariable String mockId,
                           @RequestHeader(value = "Last-Event-ID", defaultValue = "0") long lastEventId) {
         projectService.require(id);
-        return mockLogService.subscribe(mockId, lastEventId);
+        return eventStreamService.subscribe(mockId, lastEventId);
     }
 
     private String respond(String projectId, String mockId, String panel, String error,
