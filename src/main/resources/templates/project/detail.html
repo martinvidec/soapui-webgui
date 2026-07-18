@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="panel">
+    <h2 th:text="${name}">Element</h2>
+    <p><span class="badge" th:text="${typeLabel}">Typ</span></p>
+    <table class="table kv">
+        <tr>
+            <th>ID</th>
+            <td><code th:text="${itemId}">id</code></td>
+        </tr>
+        <tr>
+            <th>Kind-Elemente</th>
+            <td th:text="${childCount}">0</td>
+        </tr>
+        <tr th:if="${description}">
+            <th>Beschreibung</th>
+            <td th:text="${description}">—</td>
+        </tr>
+    </table>
+    <p class="muted">Der Editor für diesen Elementtyp folgt in den Issues #6–#11.</p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="children(projectId, nodes)" class="tree-children-list">
+    <p th:if="${#lists.isEmpty(nodes)}" class="muted tree-empty">— leer —</p>
+
+    <th:block th:each="n : ${nodes}">
+        <!-- Knoten mit Kindern: lazy nachladen beim ersten Aufklappen -->
+        <details class="tree-node" th:if="${n.hasChildren}"
+                 th:attr="hx-get=@{/projects/{p}/tree/{i}(p=${projectId},i=${n.id})}"
+                 hx-trigger="toggle once" hx-target="find .children" hx-swap="innerHTML">
+            <summary>
+                <span class="node-type" th:text="${n.typeLabel}">Typ</span>
+                <a th:attr="hx-get=@{/projects/{p}/items/{i}(p=${projectId},i=${n.id})}"
+                   hx-target="#detail" hx-swap="innerHTML"
+                   href="javascript:void(0)" th:text="${n.name}">Name</a>
+            </summary>
+            <div class="children"><span class="muted">lädt …</span></div>
+        </details>
+        <!-- Blattknoten -->
+        <div class="tree-node leaf" th:unless="${n.hasChildren}">
+            <span class="node-type" th:text="${n.typeLabel}">Typ</span>
+            <a th:attr="hx-get=@{/projects/{p}/items/{i}(p=${projectId},i=${n.id})}"
+               hx-target="#detail" hx-swap="innerHTML"
+               href="javascript:void(0)" th:text="${n.name}">Name</a>
+        </div>
+    </th:block>
+</div>
+
+</body>
+</html>

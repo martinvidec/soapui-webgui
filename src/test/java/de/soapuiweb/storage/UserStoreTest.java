@@ -20,7 +20,7 @@ class UserStoreTest {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     private UserStore newStore() {
-        return new UserStore(new AppProperties(tempDir, null), objectMapper);
+        return new UserStore(new AppProperties(tempDir, null, null), objectMapper);
     }
 
     @Test

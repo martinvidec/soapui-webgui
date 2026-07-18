@@ -154,6 +154,8 @@ input:focus, select:focus {
 .table th { font-size: .85rem; color: var(--text-muted); font-weight: 600; }
 .table tr:last-child td { border-bottom: none; }
 .right { text-align: right; }
+.project-link { font-weight: 600; color: var(--text); text-decoration: none; }
+.project-link:hover { color: var(--primary); text-decoration: underline; }
 
 /* Badges & Alerts */
 .badge {
@@ -179,3 +181,43 @@ input:focus, select:focus {
 .alert-error { border-color: #f1b3ae; background: #fdecea; color: var(--danger); }
 .alert-success { border-color: #a9dcbc; background: #e5f6ec; color: var(--primary); }
 .alert-highlight { border-color: var(--warn-border); background: var(--warn-bg); }
+
+/* Arbeitsansicht: Baum + Detail */
+.page-wide { max-width: 1400px; }
+.workspace {
+    display: grid;
+    grid-template-columns: minmax(280px, 380px) 1fr;
+    gap: 1.25rem;
+    align-items: start;
+}
+.tree-head { display: flex; justify-content: space-between; align-items: center; gap: .5rem; }
+.tree-head h2 { margin: 0; overflow-wrap: anywhere; }
+.tree { margin-top: .75rem; font-size: .92rem; }
+.tree-node { margin: .1rem 0; }
+.tree-node summary {
+    cursor: pointer;
+    padding: .15rem .3rem;
+    border-radius: 4px;
+    list-style-position: inside;
+}
+.tree-node summary:hover { background: #eef2f6; }
+.tree-node.leaf { padding: .15rem .3rem .15rem 1.35rem; }
+.tree-node .children { margin-left: 1.1rem; border-left: 1px solid var(--border); padding-left: .5rem; }
+.tree-node a { color: var(--text); text-decoration: none; }
+.tree-node a:hover { color: var(--primary); text-decoration: underline; }
+.node-type {
+    display: inline-block;
+    font-size: .68rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: #eef2f6;
+    border-radius: 4px;
+    padding: 0 .35rem;
+    margin-right: .3rem;
+    vertical-align: middle;
+}
+.tree-empty { margin: .2rem 0 .2rem .5rem; font-size: .85rem; }
+.detail-panel { min-height: 320px; }
+.log-panel { margin-top: 1.25rem; }
+.kv th { width: 160px; }
+.lockbar { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }

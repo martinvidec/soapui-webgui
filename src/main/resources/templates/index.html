@@ -27,7 +27,8 @@
             </thead>
             <tbody>
             <tr th:each="p : ${projects}">
-                <td><strong th:text="${p.name}">Projekt</strong></td>
+                <td><a class="project-link" th:href="@{/projects/{id}(id=${p.id})}"
+                       th:text="${p.name}">Projekt</a></td>
                 <td th:text="${p.size}">1 KB</td>
                 <td>
                     <span th:text="${p.uploadedAt}">Datum</span>

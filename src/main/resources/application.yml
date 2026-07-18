@@ -11,6 +11,7 @@ server:
 
 app:
   data-dir: data
+  lock-timeout-minutes: 30
   mock:
     port-min: 18000
     port-max: 18999

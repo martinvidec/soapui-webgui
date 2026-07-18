@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${projectName})}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page page-wide">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <!-- Sperren-Banner (FA-06): drei Zustände -->
+    <div class="alert alert-highlight lockbar" th:if="${lockOwner == null}">
+        <span>Read-only — zum Bearbeiten die Sperre übernehmen.</span>
+        <form th:action="@{/projects/{id}/lock(id=${projectId})}" method="post" class="inline">
+            <button class="btn btn-small btn-primary" type="submit">Sperre übernehmen</button>
+        </form>
+    </div>
+    <div class="alert alert-success lockbar" th:if="${heldByMe}">
+        <span>Du bearbeitest dieses Projekt (Sperre bis <span th:text="${lockExpiresAt}">--:--</span> Uhr, verlängert sich bei Aktivität).</span>
+        <form th:action="@{/projects/{id}/unlock(id=${projectId})}" method="post" class="inline">
+            <button class="btn btn-small" type="submit">Sperre freigeben</button>
+        </form>
+    </div>
+    <div class="alert alert-error lockbar" th:if="${lockOwner != null and !heldByMe}">
+        <span>Read-only — gesperrt von <strong th:text="${lockOwner}">user</strong>
+            (bis <span th:text="${lockExpiresAt}">--:--</span> Uhr).</span>
+        <form th:if="${isAdmin}" th:action="@{/projects/{id}/unlock(id=${projectId},force=true)}"
+              method="post" class="inline"
+              onsubmit="return confirm('Sperre wirklich brechen? Ungespeicherte Arbeit des Inhabers kann verloren gehen.')">
+            <button class="btn btn-small btn-danger" type="submit">Sperre brechen (Admin)</button>
+        </form>
+    </div>
+
+    <div class="workspace">
+        <aside class="card tree-panel">
+            <div class="tree-head">
+                <h2 th:text="${projectName}">Projekt</h2>
+                <a class="btn btn-small" th:href="@{/projects/{id}/download(id=${projectId})}">Download</a>
+            </div>
+            <div class="tree">
+                <div th:replace="~{project/tree :: children(${projectId}, ${roots})}"></div>
+            </div>
+        </aside>
+        <section class="card detail-panel" id="detail">
+            <p class="muted">Wähle links ein Element aus, um Details anzuzeigen.</p>
+        </section>
+    </div>
+
+    <div class="card log-panel">
+        <h2>Logs</h2>
+        <p class="muted">Mock-Request-Log und Testlauf-Ausgaben erscheinen hier ab Issue #5 bzw. #10.</p>
+    </div>
+</main>
+</body>
+</html>
